@@ -21,14 +21,14 @@ android {
     signingConfigs {
         //调试版的keystore
         debug {
-            storeFile file("F:\\app_key\\钉钉地图\\dingdingmap.jks")
+            storeFile file("files\\dingdingmap.jks")
             storePassword "dingdingmap"
             keyAlias "dingdingmap"
             keyPassword "dingdingmap"
         }
         //发布版的keystore
         release {
-            storeFile file("F:\\app_key\\钉钉地图\\dingdingmap.jks")
+            storeFile file("files\\dingdingmap.jks")
             storePassword "dingdingmap"
             keyAlias "dingdingmap"
             keyPassword "dingdingmap"
