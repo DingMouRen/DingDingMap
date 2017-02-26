@@ -9,12 +9,18 @@ import android.location.Location;
 import android.net.Uri;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.internal.NavigationMenu;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -25,6 +31,7 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.base.BaseActivity;
 
@@ -34,11 +41,14 @@ import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
+import io.github.yavski.fabspeeddial.FabSpeedDial;
 
 public class MainActivity extends BaseActivity implements  LocationSource, AMapLocationListener ,ActivityCompat.OnRequestPermissionsResultCallback {
     private static final String TAG = MainActivity.class.getName();
     @BindView(R.id.mapview) MapView mMapView;
     @BindView(R.id.search_bar)  FloatingSearchView mSearchBar;
+    @BindView(R.id.map_mode)   FabSpeedDial mMapMode;
     private AMap mAMap;//地图控制类
     private AMapLocationClient mLocationClient ;//AMapLocationClient类对象
     private AMapLocationClientOption mLocationOption ;//参数配置对象
@@ -62,6 +72,10 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     }
 
     @Override
+    public void init(Bundle savedInstanceStae) {
+    }
+
+    @Override
     public void initView(Bundle savedInstanceState) {
         mMapView.onCreate(savedInstanceState);//创建地图
         if (null == mAMap){
@@ -78,6 +92,37 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
 
     @Override
     public void initListener() {
+        mMapMode.setMenuListener(new FabSpeedDial.MenuListener() {
+            @Override
+            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem) {
+                switch (menuItem.getItemId()){
+                    case R.id.map_standard:
+                        mAMap.setMapType(AMap.MAP_TYPE_NORMAL);
+                        break;
+                      case R.id.map_satellite:
+                          mAMap.setMapType(AMap.MAP_TYPE_SATELLITE);
+                          break;
+                      case R.id.map_night:
+                          mAMap.setMapType(AMap.MAP_TYPE_NIGHT);
+                          break;
+                      case R.id.map_navigation:
+                          mAMap.setMapType(AMap.MAP_TYPE_NAVI);
+                          break;
+
+                }
+                return true;
+            }
+
+            @Override
+            public void onMenuClosed() {
+
+            }
+        });
 
     }
 
@@ -85,6 +130,22 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     public void initData() {
 
     }
+
+    @OnClick({R.id.linear_nearby,R.id.linear_route,R.id.linear_mine})
+    public void onClick(View view){
+            switch (view.getId()){
+                case R.id.linear_nearby:
+                    Toast.makeText(MyApplication.applicationContext,"附近",Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.linear_route:
+                    Toast.makeText(MyApplication.applicationContext,"路线",Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.linear_mine:
+                    Toast.makeText(MyApplication.applicationContext,"我的",Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+
 
     @Override
     protected void onResume() {

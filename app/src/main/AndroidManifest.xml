@@ -48,7 +48,10 @@
             android:name="com.amap.api.v2.apikey"
             android:value="1a7efab8803d033aefb777eda17ffeb7">
         </meta-data>
-        <activity android:name=".ui.home.MainActivity">
+        <activity android:name=".ui.home.MainActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/MainTheme"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/map_standard"
+        android:icon="@mipmap/map_standard"
+        android:title=""
+        />
+     <item android:id="@+id/map_satellite"
+        android:icon="@mipmap/map_satellite"
+        android:title=""
+        />
+     <item android:id="@+id/map_night"
+        android:icon="@mipmap/map_night"
+        android:title=""
+        />
+     <item android:id="@+id/map_navigation"
+        android:icon="@mipmap/map_navigation"
+        android:title=""
+        />
+
+
+</menu>

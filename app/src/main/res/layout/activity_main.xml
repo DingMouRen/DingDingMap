@@ -1,26 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context="com.dingmouren.dingdingmap.ui.home.MainActivity">
 
     <com.amap.api.maps.MapView
         android:id="@+id/mapview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="50dp"
          />
+
+
     <com.arlib.floatingsearchview.FloatingSearchView
         android:id="@+id/search_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:paddingLeft="@dimen/search_bar_padding"
         android:paddingRight="@dimen/search_bar_padding"
         android:paddingTop="@dimen/search_bar_padding"
-        app:floatingSearch_leftActionMode="showSearch"
         app:floatingSearch_close_search_on_keyboard_dismiss="true"
-
+        app:floatingSearch_leftActionMode="showSearch" />
+    <io.github.yavski.fabspeeddial.FabSpeedDial
+        android:id="@+id/map_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="50dp"
+        android:layout_alignParentRight="true"
+        app:fabGravity="top_end"
+        app:fabMenu="@menu/menu_map_mode"
+        app:miniFabDrawableTint="@color/main_color"
+        app:fabDrawable="@mipmap/map_mode"
+        app:fabDrawableTint="@color/main_color"
+        app:elevation="0dp"
+        app:touchGuard="true"
+        android:layout_marginBottom="50dp"
         />
+    <include
+        layout="@layout/main_bottom_view" />
+
 </RelativeLayout>
