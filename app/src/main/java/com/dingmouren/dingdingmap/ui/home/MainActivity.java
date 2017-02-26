@@ -12,7 +12,7 @@ import butterknife.BindView;
 
 public class MainActivity extends BaseActivity {
     @BindView(R.id.mapview) MapView mMapView;
-    private AMap mAMap;
+    private AMap mAMap;//地图控制类
 
     @Override
     public int setLayoutId() {
@@ -20,7 +20,8 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    public void initView() {
+    public void initView(Bundle savedInstanceState) {
+        mMapView.onCreate(savedInstanceState);//创建地图
         if (null == mAMap){
             mAMap = mMapView.getMap();
         }
