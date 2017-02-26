@@ -18,6 +18,22 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    signingConfigs {
+        //调试版的keystore
+        debug {
+            storeFile file("F:\\app_key\\钉钉地图\\dingdingmap.jks")
+            storePassword "dingdingmap"
+            keyAlias "dingdingmap"
+            keyPassword "dingdingmap"
+        }
+        //发布版的keystore
+        release {
+            storeFile file("F:\\app_key\\钉钉地图\\dingdingmap.jks")
+            storePassword "dingdingmap"
+            keyAlias "dingdingmap"
+            keyPassword "dingdingmap"
+        }
+    }
     //java编译选项
     compileOptions{
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -38,4 +54,6 @@ dependencies {
     /*butterknife*/
     compile 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+    /*日志*/
+    compile 'com.jiongbull:jlog:1.0.5'
 }

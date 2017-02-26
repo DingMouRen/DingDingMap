@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">钉钉地图</string>
+    <string name="notifyTitle">提示</string>
+    <string name="notifyMsg">当前应用缺少必要的权限。请点击“设置”-“权限”-打开所需的权限。</string>
+    <string name="cancel">取消</string>
+    <string name="setting">设置</string>
 </resources>
