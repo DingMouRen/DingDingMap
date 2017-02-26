@@ -71,6 +71,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         mAMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);//设置定位的类型为定位模式
         mAMap.showMapText(true);
         mAMap.setMapType(AMap.MAP_TYPE_NORMAL);
+        JLog.e(TAG,"----------------");
 
     }
 
