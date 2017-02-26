@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 
 import com.amap.api.location.AMapLocation;
@@ -23,9 +24,9 @@ import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
+import com.arlib.floatingsearchview.FloatingSearchView;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.base.BaseActivity;
-import com.jiongbull.jlog.JLog;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import butterknife.BindView;
 public class MainActivity extends BaseActivity implements  LocationSource, AMapLocationListener ,ActivityCompat.OnRequestPermissionsResultCallback {
     private static final String TAG = MainActivity.class.getName();
     @BindView(R.id.mapview) MapView mMapView;
+    @BindView(R.id.search_bar)  FloatingSearchView mSearchBar;
     private AMap mAMap;//地图控制类
     private AMapLocationClient mLocationClient ;//AMapLocationClient类对象
     private AMapLocationClientOption mLocationOption ;//参数配置对象
@@ -71,7 +73,6 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         mAMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);//设置定位的类型为定位模式
         mAMap.showMapText(true);
         mAMap.setMapType(AMap.MAP_TYPE_NORMAL);
-        JLog.e(TAG,"----------------");
 
     }
 
@@ -129,14 +130,14 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     @Override//定位回调监听器
     public void onLocationChanged(AMapLocation aMapLocation) {
 //        if (null == mLocationChangedListener && null == aMapLocation) return;
-        JLog.e(TAG,"执行到了");
+        Log.e(TAG,"执行到了");
         if (0 == aMapLocation.getErrorCode()){//定位成功，成功获取到aMapLocation的信息
-            JLog.e(TAG,"定位成功");
+            Log.e(TAG,"定位成功");
             parseAMapLocation(aMapLocation);
             mLocationChangedListener.onLocationChanged(aMapLocation);//显示系统的小蓝点
         }else {//定位失败，
             String errText = "定位失败," + aMapLocation.getErrorCode()+ ": " + aMapLocation.getErrorInfo();
-            JLog.e(TAG,errText);
+            Log.e(TAG,errText);
         }
     }
 
@@ -173,7 +174,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         Date date = new Date(aMapLocation.getTime());
         df.format(date);
 
-        JLog.e(TAG,"当前定位结果来源："+aMapLocation.getLocationType()
+        Log.e(TAG,"当前定位结果来源："+aMapLocation.getLocationType()
         +"\n纬度：" + aMapLocation.getLatitude()
         +"\n经度：" + aMapLocation.getLongitude()
         +"\n精度信息：" + aMapLocation.getAccuracy()
@@ -205,7 +206,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
             mLocationOption.setNeedAddress(true);//设置是否返回地址信息，默认返回地址信息
             mLocationOption.setWifiActiveScan(true);//设置是否强制刷新WIFI，默认是true
             mLocationOption.setHttpTimeOut(30000);//设置定位请求超时时间，默认是30秒
-            mLocationOption.setLocationCacheEnable(false);//关闭定位缓存机制
+            mLocationOption.setLocationCacheEnable(true);//设置是否使用定位缓存
         }
     }
 
