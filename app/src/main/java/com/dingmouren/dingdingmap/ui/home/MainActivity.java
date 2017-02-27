@@ -29,6 +29,7 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationClientOption.AMapLocationMode;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
@@ -98,6 +99,8 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         }
         if (null == mUiSettings && null != mAMap){
             mUiSettings = mAMap.getUiSettings();//获取操作控件类
+            mUiSettings.setScaleControlsEnabled(true);//显示比例尺控件
+            mUiSettings.setLogoLeftMargin(getWindowManager().getDefaultDisplay().getWidth());//隐藏高德地图的Logo
         }
         //显示地图
         mAMap.setLocationSource(this);//设置定位监听
@@ -142,7 +145,6 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
             }
         });
         mFabLocation.setOnClickListener(v -> {
-            Toast.makeText(MyApplication.applicationContext,"定位",Toast.LENGTH_SHORT).show();
             if (0 != mLatitude && 0 != mLongitude){
                 LatLng latLng = new LatLng(mLatitude,mLongitude);
                 if (null == mLocationMarker){
