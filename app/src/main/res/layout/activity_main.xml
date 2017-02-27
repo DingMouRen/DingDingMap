@@ -15,17 +15,15 @@
          />
 
 
-    <com.arlib.floatingsearchview.FloatingSearchView
+    <com.mancj.materialsearchbar.MaterialSearchBar
         android:id="@+id/search_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:paddingLeft="@dimen/search_bar_padding"
         android:paddingRight="@dimen/search_bar_padding"
         android:paddingTop="@dimen/search_bar_padding"
-        app:floatingSearch_close_search_on_keyboard_dismiss="true"
-        app:floatingSearch_leftActionMode="showSearch" />
+        app:hint="查找地点、公交、地铁" />
     <include
         layout="@layout/main_bottom_view" />
     <android.support.design.widget.FloatingActionButton

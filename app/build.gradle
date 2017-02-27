@@ -54,13 +54,11 @@ dependencies {
     /*butterknife*/
     compile 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
-    /*搜索*/
-    compile 'com.github.arimorty:floatingsearchview:2.0.3'
+    /*搜索框*/
+    compile 'com.github.mancj:MaterialSearchBar:0.3.5'
     /*fab菜单*/
     compile 'io.github.yavski:fab-speed-dial:1.0.6'
     compile 'com.getbase:floatingactionbutton:1.10.1'
     /*SP使用到了*/
     compile 'org.androidannotations:androidannotations:4.2.0'
-    /*透明状态栏*/
-    compile 'com.jaeger.statusbaruitl:library:1.3.6'
 }

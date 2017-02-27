@@ -39,13 +39,13 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
-import com.arlib.floatingsearchview.FloatingSearchView;
 import com.dingmouren.dingdingmap.Constant;
 import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.base.BaseActivity;
+import com.dingmouren.dingdingmap.ui.search.SearchActivity;
 import com.dingmouren.dingdingmap.util.SPUtil;
-import com.jaeger.library.StatusBarUtil;
+import com.mancj.materialsearchbar.MaterialSearchBar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ import io.github.yavski.fabspeeddial.FabSpeedDial;
 public class MainActivity extends BaseActivity implements  LocationSource, AMapLocationListener ,ActivityCompat.OnRequestPermissionsResultCallback {
     private static final String TAG = MainActivity.class.getName();
     @BindView(R.id.mapview) MapView mMapView;
-    @BindView(R.id.search_bar)  FloatingSearchView mSearchBar;
+    @BindView(R.id.search_bar)  MaterialSearchBar mSearchBar;
     @BindView(R.id.map_mode)   FabSpeedDial mMapMode;
     @BindView(R.id.fab_location) FloatingActionButton mFabLocation;
     @BindView(R.id.fab_check) FloatingActionButton mFabCheck;
@@ -171,6 +171,8 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
                 Toast.makeText(MyApplication.applicationContext,"开启实时路况",Toast.LENGTH_SHORT).show();
             }
         });
+
+        mSearchBar.setOnClickListener(v -> startActivity(new Intent(MainActivity.this,SearchActivity.class)));
     }
 
     @Override

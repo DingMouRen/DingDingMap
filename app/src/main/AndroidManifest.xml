@@ -57,6 +57,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.search.SearchActivity"
+            android:launchMode="singleTask"
+            />
 
         <service android:name="com.amap.api.location.APSService"/>
     </application>
