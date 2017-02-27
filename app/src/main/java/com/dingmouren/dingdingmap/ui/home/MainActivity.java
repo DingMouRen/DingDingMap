@@ -29,8 +29,14 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationClientOption.AMapLocationMode;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.dingmouren.dingdingmap.Constant;
 import com.dingmouren.dingdingmap.MyApplication;
@@ -58,6 +64,10 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     private AMapLocationClient mLocationClient ;//AMapLocationClient类对象
     private AMapLocationClientOption mLocationOption ;//参数配置对象
     private OnLocationChangedListener mLocationChangedListener;//定位回调监听
+    private UiSettings mUiSettings;//操作控件类
+    private double mLatitude;//纬度
+    private double mLongitude;//经度
+    private Marker mLocationMarker;
 
     /**
      * 需要进行检测的权限数组
@@ -85,6 +95,9 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         mMapView.onCreate(savedInstanceState);//创建地图
         if (null == mAMap){
             mAMap = mMapView.getMap();
+        }
+        if (null == mUiSettings && null != mAMap){
+            mUiSettings = mAMap.getUiSettings();//获取操作控件类
         }
         //显示地图
         mAMap.setLocationSource(this);//设置定位监听
@@ -130,6 +143,15 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         });
         mFabLocation.setOnClickListener(v -> {
             Toast.makeText(MyApplication.applicationContext,"定位",Toast.LENGTH_SHORT).show();
+            if (0 != mLatitude && 0 != mLongitude){
+                LatLng latLng = new LatLng(mLatitude,mLongitude);
+                if (null == mLocationMarker){
+                    mLocationMarker = mAMap.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.fromResource(R.mipmap.transparent)));
+                }else {
+                    mLocationMarker.setPosition(latLng);
+                }
+                mAMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
+            }
         });
         mFabCheck.setOnClickListener(v -> {
             if (null == mAMap) return;
@@ -137,10 +159,12 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
                 mFabCheck.setImageResource(R.mipmap.no_check);
                 SPUtil.put(MyApplication.applicationContext,Constant.TRAFFIC_ENABLE,false);
                 mAMap.setTrafficEnabled(false);//显示实时路况图层，aMap是地图控制器对象
+                Toast.makeText(MyApplication.applicationContext,"关闭实时路况",Toast.LENGTH_SHORT).show();
             }else {
                 mFabCheck.setImageResource(R.mipmap.checking);
                 SPUtil.put(MyApplication.applicationContext,Constant.TRAFFIC_ENABLE,true);
                 mAMap.setTrafficEnabled(true);//显示实时路况图层，aMap是地图控制器对象
+                Toast.makeText(MyApplication.applicationContext,"开启实时路况",Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -213,6 +237,8 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         Log.e(TAG,"执行到了");
         if (0 == aMapLocation.getErrorCode()){//定位成功，成功获取到aMapLocation的信息
             Log.e(TAG,"定位成功");
+            mLatitude = aMapLocation.getLatitude();
+            mLongitude = aMapLocation.getLongitude();
             parseAMapLocation(aMapLocation);
             mLocationChangedListener.onLocationChanged(aMapLocation);//显示系统的小蓝点
         }else {//定位失败，
