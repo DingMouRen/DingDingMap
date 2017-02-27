@@ -87,7 +87,6 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         mAMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);//设置定位的类型为定位模式
         mAMap.showMapText(true);
         mAMap.setMapType(AMap.MAP_TYPE_NORMAL);
-
     }
 
     @Override
@@ -134,6 +133,9 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     @OnClick({R.id.linear_nearby,R.id.linear_route,R.id.linear_mine})
     public void onClick(View view){
             switch (view.getId()){
+                case R.id.fab_location:
+                    Toast.makeText(MyApplication.applicationContext,"定位",Toast.LENGTH_SHORT).show();
+                    break;
                 case R.id.linear_nearby:
                     Toast.makeText(MyApplication.applicationContext,"附近",Toast.LENGTH_SHORT).show();
                     break;

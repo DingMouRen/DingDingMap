@@ -27,6 +27,22 @@
         android:paddingTop="@dimen/search_bar_padding"
         app:floatingSearch_close_search_on_keyboard_dismiss="true"
         app:floatingSearch_leftActionMode="showSearch" />
+    <include
+        layout="@layout/main_bottom_view" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/location"
+        android:tint="@color/main_color"
+        android:scaleType="fitXY"
+        app:fab_size="mini"
+        android:background="?selectableItemBackground"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp"
+        android:layout_marginLeft="5dp"
+        />
+
     <io.github.yavski.fabspeeddial.FabSpeedDial
         android:id="@+id/map_mode"
         android:layout_width="wrap_content"
@@ -43,7 +59,6 @@
         app:touchGuard="true"
         android:layout_marginBottom="50dp"
         />
-    <include
-        layout="@layout/main_bottom_view" />
+
 
 </RelativeLayout>
