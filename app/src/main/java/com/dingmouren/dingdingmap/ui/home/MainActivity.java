@@ -49,6 +49,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     @BindView(R.id.mapview) MapView mMapView;
     @BindView(R.id.search_bar)  FloatingSearchView mSearchBar;
     @BindView(R.id.map_mode)   FabSpeedDial mMapMode;
+    @BindView(R.id.fab_location) FloatingActionButton mFabLocation;
     private AMap mAMap;//地图控制类
     private AMapLocationClient mLocationClient ;//AMapLocationClient类对象
     private AMapLocationClientOption mLocationOption ;//参数配置对象
@@ -122,7 +123,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
 
             }
         });
-
+        mFabLocation.setOnClickListener(v -> Toast.makeText(MyApplication.applicationContext,"定位",Toast.LENGTH_SHORT).show());
     }
 
     @Override
@@ -133,9 +134,6 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     @OnClick({R.id.linear_nearby,R.id.linear_route,R.id.linear_mine})
     public void onClick(View view){
             switch (view.getId()){
-                case R.id.fab_location:
-                    Toast.makeText(MyApplication.applicationContext,"定位",Toast.LENGTH_SHORT).show();
-                    break;
                 case R.id.linear_nearby:
                     Toast.makeText(MyApplication.applicationContext,"附近",Toast.LENGTH_SHORT).show();
                     break;
