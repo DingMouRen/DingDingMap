@@ -50,7 +50,6 @@
         </meta-data>
         <activity android:name=".ui.home.MainActivity"
             android:launchMode="singleTask"
-            android:theme="@style/MainTheme"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -44,6 +45,7 @@ import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.base.BaseActivity;
 import com.dingmouren.dingdingmap.util.SPUtil;
+import com.jaeger.library.StatusBarUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

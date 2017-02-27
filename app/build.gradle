@@ -61,4 +61,6 @@ dependencies {
     compile 'com.getbase:floatingactionbutton:1.10.1'
     /*SP使用到了*/
     compile 'org.androidannotations:androidannotations:4.2.0'
+    /*透明状态栏*/
+    compile 'com.jaeger.statusbaruitl:library:1.3.6'
 }
