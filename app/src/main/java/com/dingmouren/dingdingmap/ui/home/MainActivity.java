@@ -2,6 +2,7 @@ package com.dingmouren.dingdingmap.ui.home;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -31,9 +32,11 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.dingmouren.dingdingmap.Constant;
 import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.base.BaseActivity;
+import com.dingmouren.dingdingmap.util.SPUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,6 +53,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     @BindView(R.id.search_bar)  FloatingSearchView mSearchBar;
     @BindView(R.id.map_mode)   FabSpeedDial mMapMode;
     @BindView(R.id.fab_location) FloatingActionButton mFabLocation;
+    @BindView(R.id.fab_check) FloatingActionButton mFabCheck;
     private AMap mAMap;//地图控制类
     private AMapLocationClient mLocationClient ;//AMapLocationClient类对象
     private AMapLocationClientOption mLocationOption ;//参数配置对象
@@ -88,6 +92,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         mAMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);//设置定位的类型为定位模式
         mAMap.showMapText(true);
         mAMap.setMapType(AMap.MAP_TYPE_NORMAL);
+        initTrafficEnable();
     }
 
     @Override
@@ -123,7 +128,21 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
 
             }
         });
-        mFabLocation.setOnClickListener(v -> Toast.makeText(MyApplication.applicationContext,"定位",Toast.LENGTH_SHORT).show());
+        mFabLocation.setOnClickListener(v -> {
+            Toast.makeText(MyApplication.applicationContext,"定位",Toast.LENGTH_SHORT).show();
+        });
+        mFabCheck.setOnClickListener(v -> {
+            if (null == mAMap) return;
+            if((boolean)SPUtil.get(MyApplication.applicationContext, Constant.TRAFFIC_ENABLE,true)){
+                mFabCheck.setImageResource(R.mipmap.no_check);
+                SPUtil.put(MyApplication.applicationContext,Constant.TRAFFIC_ENABLE,false);
+                mAMap.setTrafficEnabled(false);//显示实时路况图层，aMap是地图控制器对象
+            }else {
+                mFabCheck.setImageResource(R.mipmap.checking);
+                SPUtil.put(MyApplication.applicationContext,Constant.TRAFFIC_ENABLE,true);
+                mAMap.setTrafficEnabled(true);//显示实时路况图层，aMap是地图控制器对象
+            }
+        });
     }
 
     @Override
@@ -190,7 +209,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     }
     @Override//定位回调监听器
     public void onLocationChanged(AMapLocation aMapLocation) {
-//        if (null == mLocationChangedListener && null == aMapLocation) return;
+        if (null == mLocationChangedListener && null == aMapLocation) return;
         Log.e(TAG,"执行到了");
         if (0 == aMapLocation.getErrorCode()){//定位成功，成功获取到aMapLocation的信息
             Log.e(TAG,"定位成功");
@@ -376,6 +395,20 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    /**
+     * 初始化路况信息
+     */
+    private void initTrafficEnable() {
+        if (null == mAMap) return;
+        if((boolean)SPUtil.get(MyApplication.applicationContext, Constant.TRAFFIC_ENABLE,true)){
+            mFabCheck.setImageResource(R.mipmap.checking);
+            mAMap.setTrafficEnabled(true);//显示实时路况图层，aMap是地图控制器对象
+        }else {
+            mFabCheck.setImageResource(R.mipmap.no_check);
+            mAMap.setTrafficEnabled(false);//显示实时路况图层，aMap是地图控制器对象
+        }
     }
 
 

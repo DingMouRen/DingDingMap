@@ -43,13 +43,26 @@
         android:layout_marginBottom="60dp"
         android:layout_marginLeft="5dp"
         />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/checking"
+        android:clickable="true"
+        android:scaleType="fitXY"
+        app:fab_size="mini"
+        android:alpha="0.8"
+        android:layout_marginTop="80dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        />
 
     <io.github.yavski.fabspeeddial.FabSpeedDial
         android:id="@+id/map_mode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="130dp"
         android:layout_alignParentRight="true"
         app:fabGravity="top_end"
         android:alpha="0.8"
@@ -57,9 +70,7 @@
         app:miniFabDrawableTint="@color/main_color"
         app:fabDrawable="@mipmap/map_mode"
         app:fabDrawableTint="@color/main_color"
-        app:elevation="0dp"
         app:touchGuard="true"
-        android:layout_marginBottom="50dp"
         />
 
 

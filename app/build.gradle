@@ -59,4 +59,6 @@ dependencies {
     /*fab菜单*/
     compile 'io.github.yavski:fab-speed-dial:1.0.6'
     compile 'com.getbase:floatingactionbutton:1.10.1'
+    /*SP使用到了*/
+    compile 'org.androidannotations:androidannotations:4.2.0'
 }
