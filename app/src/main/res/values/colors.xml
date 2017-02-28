@@ -5,5 +5,6 @@
     <color name="colorAccent">#f2f2f2</color>
     <color name="main_color">#05C1F1</color>
     <color name="status_color">#a0e2f3</color>
+    <color name="line">#c2c2c2c2</color>
 
 </resources>
