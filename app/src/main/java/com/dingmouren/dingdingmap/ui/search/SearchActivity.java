@@ -51,7 +51,7 @@ public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiS
     }
 
     private void init() {
-        inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (null == inputMethodManager)inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         if (null == mSearchResultAdapter) mSearchResultAdapter = new SearchResultAdapter();
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setHasFixedSize(true);

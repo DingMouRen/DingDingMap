@@ -1,6 +1,7 @@
 package com.dingmouren.dingdingmap.ui.routedetail;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +18,7 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
@@ -35,6 +38,7 @@ import com.dingmouren.dingdingmap.ui.search.SearchActivity;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 
 import butterknife.BindView;
 
@@ -58,10 +62,12 @@ public class RouteDetailActivity extends BaseActivity implements LocationSource,
     private OnLocationChangedListener mLocationChangedListener;//定位回调监听
     private AMapLocationClient mLocationClient;//AMapLocationClient类对象
     private AMapLocationClientOption mLocationOption;//定位参数对象
-    private double mLatitude;//纬度
-    private double mLongitude;//经度
     private Marker mLocationMarker;
     private String mMyLocationAdress;
+    private LatLng myLatLng;
+    private LatLng destnationLatLng;
+    private DecimalFormat decimalFormat;//保留小数点用的
+    private InputMethodManager inputMethodManager;//隐藏软件盘用的
 
     public static void newInstance(Activity activity, PoiItem poiItem){
         Intent intent = new Intent(activity,RouteDetailActivity.class);
@@ -78,11 +84,14 @@ public class RouteDetailActivity extends BaseActivity implements LocationSource,
     @Override
     public void init(Bundle savedInstanceStae) {
         mPoiItem = (PoiItem) getIntent().getExtras().getParcelable(DATA);
+        destnationLatLng = new LatLng(mPoiItem.getLatLonPoint().getLatitude(),mPoiItem.getLatLonPoint().getLongitude());
+        if (null == inputMethodManager)inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 
     }
 
     @Override
     public void initView(Bundle savedInstanceState) {
+        inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(),0);//进来就要隐藏软件盘
         mMapView.onCreate(savedInstanceState);//创建地图
         if (null == mAMap) mAMap = mMapView.getMap();//获取地图控制类
         if (null == mUiSettings && null != mAMap){
@@ -102,7 +111,7 @@ public class RouteDetailActivity extends BaseActivity implements LocationSource,
 
         mAMap.clear();
         MarkerOptions markerOptions =  new MarkerOptions()
-                .position(new LatLng(mPoiItem.getLatLonPoint().getLatitude(),mPoiItem.getLatLonPoint().getLongitude()))
+                .position(destnationLatLng)
                 .title(mPoiItem.getTel()).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
                         .decodeResource(getResources(),R.mipmap.poi)));
         mAMap.addMarker(markerOptions);
@@ -121,19 +130,17 @@ public class RouteDetailActivity extends BaseActivity implements LocationSource,
         mSearchBar.enableSearch();
         mSearchBar.setHint(mPoiItem == null ? "" : mPoiItem.getTitle());
         mFabLocation.setOnClickListener(v -> {
-            Log.e(TAG,"点击");
-            if (0 != mLatitude && 0 != mLongitude){
-                LatLng latLng = new LatLng(mLatitude,mLongitude);
-                if (null == mLocationMarker){
+            if (null != myLatLng){
+                if (null == mLocationMarker && null != myLatLng){
                     MarkerOptions markerOptions =  new MarkerOptions()
-                            .position(new LatLng(mLatitude,mLongitude))
+                            .position(myLatLng)
                             .title(mMyLocationAdress).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
                                     .decodeResource(getResources(),R.mipmap.my_location)));
                     mLocationMarker = mAMap.addMarker(markerOptions);
                 }else {
-                    mLocationMarker.setPosition(latLng);
+                    mLocationMarker.setPosition(myLatLng);
                 }
-                mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
+                mAMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng,15));
             }
         });
     }
@@ -173,14 +180,16 @@ public class RouteDetailActivity extends BaseActivity implements LocationSource,
 
     @Override//定位回调监听器
     public void onLocationChanged(AMapLocation aMapLocation) {
-        Log.e(TAG,"定位");
         if (null != mLocationChangedListener && null != aMapLocation){
             if (null != aMapLocation && aMapLocation.getErrorCode() == 0){
                 mMyLocationAdress = aMapLocation.getAddress();
-                mLatitude = aMapLocation.getLatitude();
-                mLongitude = aMapLocation.getLongitude();
-                Log.e(TAG,"定位成功："+mLatitude+"-"+mLongitude);
+                myLatLng = new LatLng(aMapLocation.getLatitude(),aMapLocation.getLongitude());
+                if (null != myLatLng && null != destnationLatLng){
+                    decimalFormat = new DecimalFormat(".0");
+                    mDistance.setText(decimalFormat.format(AMapUtils.calculateLineDistance(myLatLng,destnationLatLng)/1000) +"公里");
+                }
 //                mLocationChangedListener.onLocationChanged(aMapLocation);//显示系统的小圆点
+
             }else {
                 Toast.makeText(MyApplication.applicationContext,"定位失败",Toast.LENGTH_SHORT).show();
             }
@@ -189,7 +198,6 @@ public class RouteDetailActivity extends BaseActivity implements LocationSource,
 
     @Override//设置定位初始化以及启动定位,激活定位
     public void activate(OnLocationChangedListener onLocationChangedListener) {
-        Log.e(TAG,"激活定位");
         mLocationChangedListener = onLocationChangedListener;
         if (null == mLocationClient){
             mLocationClient = new AMapLocationClient(this);
