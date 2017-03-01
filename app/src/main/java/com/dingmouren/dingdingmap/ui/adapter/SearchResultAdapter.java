@@ -4,11 +4,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amap.api.services.core.PoiItem;
 import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
+import com.dingmouren.dingdingmap.listener.SearchItemOnClickListener;
 
 import org.w3c.dom.Text;
 
@@ -20,8 +22,12 @@ import java.util.List;
 
 public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapter.ViewHolder> {
     private List<PoiItem> mList;
+    private SearchItemOnClickListener mListener;
     public void setList(List<PoiItem> list){
         this.mList = list;
+    }
+    public void setOnItemClickListener(SearchItemOnClickListener listener){
+        this.mListener = listener;
     }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -32,6 +38,11 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.bindData(mList.get(position));
+        holder.root.setOnClickListener(v -> {
+            if (null != mListener ){
+                mListener.onClick(holder.root,mList.get(position),position);
+            }
+        });
     }
 
     @Override
@@ -40,11 +51,13 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder{
+        LinearLayout root;
         TextView tvName,tvAddress;
         public ViewHolder(View itemView) {
             super(itemView);
             tvName = (TextView) itemView.findViewById(R.id.tv_name);
             tvAddress = (TextView) itemView.findViewById(R.id.tv_address);
+            root = (LinearLayout) itemView.findViewById(R.id.root);
         }
         private void bindData(PoiItem poiItem){
             if (null != poiItem){

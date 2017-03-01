@@ -1,5 +1,6 @@
 package com.dingmouren.dingdingmap.ui.search;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -9,6 +10,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -19,6 +21,7 @@ import com.amap.api.services.poisearch.PoiSearch;
 import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.ui.adapter.SearchResultAdapter;
+import com.dingmouren.dingdingmap.ui.routedetail.RouteDetailActivity;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 
 import java.util.List;
@@ -37,6 +40,7 @@ public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiS
     private SearchResultAdapter mSearchResultAdapter;
     private PoiSearch mPoiSearch;//POI搜索
     private PoiSearch.Query mPoitQuery;//POI查询条件类
+    private InputMethodManager inputMethodManager;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +51,7 @@ public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiS
     }
 
     private void init() {
+        inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         if (null == mSearchResultAdapter) mSearchResultAdapter = new SearchResultAdapter();
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setHasFixedSize(true);
@@ -54,21 +59,7 @@ public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiS
     }
 
     private void initListener() {
-        mSearchBar.addTextChangeListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+         mSearchBar.enableSearch();
         mSearchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
             @Override
             public void onSearchStateChanged(boolean b) {
@@ -85,6 +76,9 @@ public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiS
                 mPoiSearch.setOnPoiSearchListener(SearchActivity.this);
                 mPoiSearch.searchPOIAsyn();
                 mProgressBar.setVisibility(View.VISIBLE);
+                if (null != inputMethodManager){//隐藏软件盘
+                    inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(),0);
+                }
 
             }
 
@@ -93,6 +87,7 @@ public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiS
 
             }
         });
+        mSearchResultAdapter.setOnItemClickListener((view, poiItem, position) -> RouteDetailActivity.newInstance(SearchActivity.this,poiItem));
     }
 
     @Override

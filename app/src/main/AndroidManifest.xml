@@ -50,6 +50,7 @@
         </meta-data>
         <activity android:name=".ui.home.MainActivity"
             android:launchMode="singleTask"
+            android:theme="@style/MainTheme"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -60,6 +61,9 @@
         <activity android:name=".ui.search.SearchActivity"
             android:launchMode="singleTask"
             />
+        <activity android:name=".ui.routedetail.RouteDetailActivity"
+            android:theme="@style/RouteDetailTheme"
+            android:launchMode="singleTask"/>
 
         <service android:name="com.amap.api.location.APSService"/>
     </application>

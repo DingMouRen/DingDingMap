@@ -13,5 +13,9 @@
     <style name="MainTheme" parent="AppTheme">
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <style name="RouteDetailTheme" parent="AppTheme">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
 
 </resources>

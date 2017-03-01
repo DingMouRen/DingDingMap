@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.provider.Settings;
@@ -39,6 +40,7 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.MyLocationStyle;
 import com.dingmouren.dingdingmap.Constant;
 import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
@@ -71,6 +73,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     private double mLatitude;//纬度
     private double mLongitude;//经度
     private Marker mLocationMarker;
+    boolean isLocated = false;//首次进来定位用的
 
     /**
      * 需要进行检测的权限数组
@@ -101,7 +104,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         }
         if (null == mUiSettings && null != mAMap){
             mUiSettings = mAMap.getUiSettings();//获取操作控件类
-            mUiSettings.setScaleControlsEnabled(true);//显示比例尺控件
+            mUiSettings.setScaleControlsEnabled(false);//是否显示比例尺控件
             mUiSettings.setLogoLeftMargin(getWindowManager().getDefaultDisplay().getWidth());//隐藏高德地图的Logo
         }
         //显示地图
@@ -110,6 +113,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         mAMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);//设置定位的类型为定位模式
         mAMap.showMapText(true);
         mAMap.setMapType(AMap.MAP_TYPE_NORMAL);
+        setupLocationIcon();//自定义系统的定位图标
         initTrafficEnable();
     }
 
@@ -154,7 +158,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
                 }else {
                     mLocationMarker.setPosition(latLng);
                 }
-                mAMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
+                mAMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
             }
         });
         mFabCheck.setOnClickListener(v -> {
@@ -237,16 +241,19 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
             mLocationClient.onDestroy();
         }
     }
+
     @Override//定位回调监听器
     public void onLocationChanged(AMapLocation aMapLocation) {
         if (null == mLocationChangedListener && null == aMapLocation) return;
-        Log.e(TAG,"执行到了");
         if (0 == aMapLocation.getErrorCode()){//定位成功，成功获取到aMapLocation的信息
-            Log.e(TAG,"定位成功");
             mLatitude = aMapLocation.getLatitude();
             mLongitude = aMapLocation.getLongitude();
-            parseAMapLocation(aMapLocation);
+//            parseAMapLocation(aMapLocation);
             mLocationChangedListener.onLocationChanged(aMapLocation);//显示系统的小蓝点
+            if (!isLocated) {
+                mAMap.moveCamera(CameraUpdateFactory.zoomBy(3));
+                isLocated = true;
+            }
         }else {//定位失败，
             String errText = "定位失败," + aMapLocation.getErrorCode()+ ": " + aMapLocation.getErrorInfo();
             Log.e(TAG,errText);
@@ -405,6 +412,19 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         builder.setCancelable(false);
 
         builder.show();
+    }
+
+    /**
+     * 自定义的我的位置的图标，自定义系统的小蓝点
+     */
+    private void setupLocationIcon() {
+        MyLocationStyle myLocationStyle = new MyLocationStyle();
+        myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.mipmap.my_location));//自定义图标
+        myLocationStyle.strokeColor(getResources().getColor(R.color.main_color));//自定义精度范围的圆形边框颜色
+        myLocationStyle.strokeWidth(5f);//自定义圆形边框的宽度
+        myLocationStyle.radiusFillColor(Color.argb(10, 0, 0, 180));//设置圆形的填充颜色
+        mAMap.setMyLocationStyle(myLocationStyle);//将自定义的样式显示在地图上
+        Log.e(TAG,"设置自定义样式");
     }
 
     /**
