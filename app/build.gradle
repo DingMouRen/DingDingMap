@@ -61,4 +61,6 @@ dependencies {
     compile 'com.getbase:floatingactionbutton:1.10.1'
     /*SP使用到了*/
     compile 'org.androidannotations:androidannotations:4.2.0'
+    /*MetarialDesignText*/
+    compile 'com.rengwuxian.materialedittext:library:2.1.4'
 }

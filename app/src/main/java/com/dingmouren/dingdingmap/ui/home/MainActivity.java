@@ -45,6 +45,7 @@ import com.dingmouren.dingdingmap.Constant;
 import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.base.BaseActivity;
+import com.dingmouren.dingdingmap.ui.route_plan.RoutePlanActivity;
 import com.dingmouren.dingdingmap.ui.search.SearchActivity;
 import com.dingmouren.dingdingmap.util.SPUtil;
 import com.mancj.materialsearchbar.MaterialSearchBar;
@@ -192,6 +193,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
                     break;
                 case R.id.linear_route:
                     Toast.makeText(MyApplication.applicationContext,"路线",Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(MainActivity.this, RoutePlanActivity.class));
                     break;
                 case R.id.linear_mine:
                     Toast.makeText(MyApplication.applicationContext,"我的",Toast.LENGTH_SHORT).show();

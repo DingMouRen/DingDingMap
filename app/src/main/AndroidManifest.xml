@@ -64,6 +64,8 @@
         <activity android:name=".ui.routedetail.RouteDetailActivity"
             android:theme="@style/RouteDetailTheme"
             android:launchMode="singleTask"/>
+        <activity android:name=".ui.route_plan.RoutePlanActivity"
+            android:launchMode="singleTask"/>
 
         <service android:name="com.amap.api.location.APSService"/>
     </application>

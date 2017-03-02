@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottom_info"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:padding="5dp"
+    android:background="@drawable/bg_bottom_bar"
+    android:layout_gravity="bottom"
+    android:gravity="center_vertical">
+    <TextView
+        android:id="@+id/firstline"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_marginLeft="12dp"
+        android:singleLine="true"
+        android:textColor="#333333"
+        android:text="66分钟（6公里）"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/secondline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/firstline"
+        android:layout_marginLeft="12dp"
+        android:gravity="right"
+        android:singleLine="true"
+        android:text="打车约66元"
+        android:textColor="#999999"
+        android:textSize="13sp"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:id="@+id/detail"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:clickable="true"
+        android:background="?selectableItemBackground"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="详情"
+            android:textColor="@color/main_color"
+            android:textSize="14sp" />
+
+        <Button
+            android:layout_width="7dp"
+            android:layout_height="13dp"
+            android:layout_marginLeft="4dp"
+            android:background="@mipmap/arrow_right"
+            android:gravity="center_vertical" />
+    </LinearLayout>
+</RelativeLayout>

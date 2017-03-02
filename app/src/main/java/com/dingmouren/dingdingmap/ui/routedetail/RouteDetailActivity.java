@@ -143,6 +143,10 @@ public class RouteDetailActivity extends BaseActivity implements LocationSource,
                 mAMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng,15));
             }
         });
+
+        mFabToWhere.setOnClickListener(v -> {
+
+        });
     }
 
     @Override
