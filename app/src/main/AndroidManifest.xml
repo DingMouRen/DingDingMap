@@ -61,10 +61,12 @@
         <activity android:name=".ui.search.SearchActivity"
             android:launchMode="singleTask"
             />
-        <activity android:name=".ui.routedetail.RouteDetailActivity"
+        <activity android:name=".ui.search_result.SearchResultActivity"
             android:theme="@style/RouteDetailTheme"
             android:launchMode="singleTask"/>
         <activity android:name=".ui.route_plan.RoutePlanActivity"
+            android:launchMode="singleTask"/>
+        <activity android:name=".ui.detail.BusRouteDetailActivity"
             android:launchMode="singleTask"/>
 
         <service android:name="com.amap.api.location.APSService"/>

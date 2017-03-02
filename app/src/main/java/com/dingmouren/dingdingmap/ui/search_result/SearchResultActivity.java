@@ -1,14 +1,12 @@
-package com.dingmouren.dingdingmap.ui.routedetail;
+package com.dingmouren.dingdingmap.ui.search_result;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,7 +17,6 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.AMapUtils;
-import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
@@ -28,16 +25,14 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
-import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.services.core.PoiItem;
 import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.base.BaseActivity;
-import com.dingmouren.dingdingmap.ui.home.MainActivity;
+import com.dingmouren.dingdingmap.ui.route_plan.RoutePlanActivity;
 import com.dingmouren.dingdingmap.ui.search.SearchActivity;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 
-import java.io.Serializable;
 import java.text.DecimalFormat;
 
 import butterknife.BindView;
@@ -46,8 +41,8 @@ import butterknife.BindView;
  * Created by mouren on 2017/2/28.
  */
 
-public class RouteDetailActivity extends BaseActivity implements LocationSource,AMapLocationListener {
-    private static final String TAG = RouteDetailActivity.class.getName();
+public class SearchResultActivity extends BaseActivity implements LocationSource,AMapLocationListener {
+    private static final String TAG = SearchResultActivity.class.getName();
     private static final String DATA = "data";
     @BindView(R.id.mapview) MapView mMapView;
     @BindView(R.id.search_bar) MaterialSearchBar mSearchBar;
@@ -70,7 +65,7 @@ public class RouteDetailActivity extends BaseActivity implements LocationSource,
     private InputMethodManager inputMethodManager;//隐藏软件盘用的
 
     public static void newInstance(Activity activity, PoiItem poiItem){
-        Intent intent = new Intent(activity,RouteDetailActivity.class);
+        Intent intent = new Intent(activity,SearchResultActivity.class);
         Bundle bundle = new Bundle();
         bundle.putParcelable(DATA, (Parcelable) poiItem);
         intent.putExtras(bundle);
@@ -145,7 +140,7 @@ public class RouteDetailActivity extends BaseActivity implements LocationSource,
         });
 
         mFabToWhere.setOnClickListener(v -> {
-
+            RoutePlanActivity.newInstance(this,null,null);
         });
     }
 

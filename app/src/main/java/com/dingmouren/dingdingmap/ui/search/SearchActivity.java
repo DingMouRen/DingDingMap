@@ -6,8 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -21,7 +19,7 @@ import com.amap.api.services.poisearch.PoiSearch;
 import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.ui.adapter.SearchResultAdapter;
-import com.dingmouren.dingdingmap.ui.routedetail.RouteDetailActivity;
+import com.dingmouren.dingdingmap.ui.search_result.SearchResultActivity;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 
 import java.util.List;
@@ -87,7 +85,7 @@ public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiS
 
             }
         });
-        mSearchResultAdapter.setOnItemClickListener((view, poiItem, position) -> RouteDetailActivity.newInstance(SearchActivity.this,poiItem));
+        mSearchResultAdapter.setOnItemClickListener((view, poiItem, position) -> SearchResultActivity.newInstance(SearchActivity.this,poiItem));
     }
 
     @Override
