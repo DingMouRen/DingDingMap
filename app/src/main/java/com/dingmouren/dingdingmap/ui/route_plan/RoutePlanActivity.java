@@ -26,6 +26,7 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.BusRouteResult;
+import com.amap.api.services.route.DrivePath;
 import com.amap.api.services.route.DriveRouteResult;
 import com.amap.api.services.route.RideRouteResult;
 import com.amap.api.services.route.RouteSearch;
@@ -35,7 +36,9 @@ import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.base.BaseActivity;
 import com.dingmouren.dingdingmap.ui.adapter.RoutePlanBusAdapter;
 import com.dingmouren.dingdingmap.ui.detail.BusRouteDetailActivity;
+import com.dingmouren.dingdingmap.ui.detail.DriveRouteDetailActivity;
 import com.dingmouren.dingdingmap.util.AMapUtil;
+import com.dingmouren.dingdingmap.util.DrivingRouteOverlay;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import butterknife.BindView;
@@ -55,7 +58,7 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     @BindView(R.id.route_map)  MapView mMapView;
     @BindView(R.id.bottom_info)  RelativeLayout mBottomInfo;
     @BindView(R.id.recycler)  RecyclerView mRecycler;
-    @BindView(R.id.firstline)   TextView mFirstLinea;
+    @BindView(R.id.firstline)   TextView mFirstLine;
     @BindView(R.id.secondline) TextView mSeconLine;
     @BindView(R.id.detail)   LinearLayout mDetail;
     @BindView(R.id.progressbar) ProgressBar mProgressBar;
@@ -70,9 +73,10 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     private LatLonPoint mStartPoint_bus = new LatLonPoint(40.818311, 111.670801);//起点，111.670801,40.818311
     private LatLonPoint mEndPoint_bus = new LatLonPoint(44.433942, 125.184449);//终点，
     private String mCurrentCityName = "北京";
-    private final int ROUTE_TYPE_DRIVE = 1;
-    private final int ROUTE_TYPE_BUS = 2;
-    private final int ROUTE_TYPE_WALK = 3;
+    private final int ROUTE_TYPE_DRIVE = 0;
+    private final int ROUTE_TYPE_BUS = 1;
+    private final int ROUTE_TYPE_WALK = 2;
+    private final int ROUTE_TYPE_RIDE = 3;
     private ProgressDialog progDialog = null;//搜索时进度条
     private RoutePlanBusAdapter mBusAdapter;
 
@@ -116,18 +120,20 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 switch (tab.getPosition()){
-                    case 0:
+                    case ROUTE_TYPE_DRIVE:
                         mMapView.setVisibility(View.VISIBLE);
                         mRecycler.setVisibility(View.GONE);
+                        mBottomInfo.setVisibility(View.VISIBLE);
+                        searchRouteResult(ROUTE_TYPE_DRIVE,RouteSearch.DrivingDefault);
                         break;
-                    case 1:
+                    case ROUTE_TYPE_BUS:
                         searchBusRoute();
                         break;
-                    case 2:
+                    case ROUTE_TYPE_WALK:
                         mMapView.setVisibility(View.VISIBLE);
                         mRecycler.setVisibility(View.GONE);
                         break;
-                    case 3:
+                    case ROUTE_TYPE_RIDE:
                         break;
                 }
             }
@@ -177,7 +183,7 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
         mMapView.setVisibility(View.GONE);
         mRecycler.setVisibility(View.VISIBLE);
         mBottomInfo.setVisibility(View.GONE);
-        searchRouteResult(1,RouteSearch.BUS_DEFAULT);
+        searchRouteResult(ROUTE_TYPE_BUS,RouteSearch.BUS_DEFAULT);
     }
 
     /**
@@ -197,20 +203,20 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
         mProgressBar.setVisibility(View.VISIBLE);
         final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(mStartPoint,mEndPoint);
         switch (routeType){
-            case 0:
+            case ROUTE_TYPE_DRIVE:
                 //第三个参数表示途经点，第四个参数表示避让区域，第五个参数表示避让道路
                 RouteSearch.DriveRouteQuery driveRouteQuery = new RouteSearch.DriveRouteQuery(fromAndTo,mode,null,null,"");
                 mRouteSearch.calculateDriveRouteAsyn(driveRouteQuery);
                 break;
-            case 1:
+            case ROUTE_TYPE_BUS:
                 RouteSearch.BusRouteQuery busRouteQuery = new RouteSearch.BusRouteQuery(fromAndTo,mode,mCurrentCityName,0);//0表示不计算夜班车
                 mRouteSearch.calculateBusRouteAsyn(busRouteQuery);
                 break;
-            case 2:
+            case ROUTE_TYPE_WALK:
                 RouteSearch.WalkRouteQuery walkRouteQuery = new RouteSearch.WalkRouteQuery(fromAndTo,mode);
                 mRouteSearch.calculateWalkRouteAsyn(walkRouteQuery);
                 break;
-            case 3:
+            case ROUTE_TYPE_RIDE:
                 break;
         }
     }
@@ -269,9 +275,45 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
         }
     }
 
-    @Override
-    public void onDriveRouteSearched(DriveRouteResult driveRouteResult, int i) {
+    @Override//驾车路线搜索结果回调
+    public void onDriveRouteSearched(DriveRouteResult driveRouteResult, int rCode) {
+        mProgressBar.setVisibility(View.GONE);
+        mAMap.clear();
+        if (rCode == AMapException.CODE_AMAP_SUCCESS) {
+            if (driveRouteResult != null && driveRouteResult.getPaths() != null) {
+                if (driveRouteResult.getPaths().size() > 0) {
+                    mDriveRouteResult = driveRouteResult;
+                    final DrivePath drivePath = mDriveRouteResult.getPaths().get(0);
+                    DrivingRouteOverlay drivingRouteOverlay = new DrivingRouteOverlay(
+                            MyApplication.applicationContext, mAMap, drivePath,
+                            mDriveRouteResult.getStartPos(),
+                            mDriveRouteResult.getTargetPos(), null);
+                    drivingRouteOverlay.setNodeIconVisibility(false);//设置节点marker是否显示
+                    drivingRouteOverlay.setIsColorfulline(true);//是否用颜色展示交通拥堵情况，默认true
+                    drivingRouteOverlay.removeFromMap();
+                    drivingRouteOverlay.addToMap();
+                    drivingRouteOverlay.zoomToSpan();
+                    int dis = (int) drivePath.getDistance();
+                    int dur = (int) drivePath.getDuration();
+                    String des = AMapUtil.getFriendlyTime(dur)+"("+AMapUtil.getFriendlyLength(dis)+")";
+                    mFirstLine.setText(des);
+                    int taxiCost = (int) mDriveRouteResult.getTaxiCost();
+                    mSeconLine.setText("打车约"+taxiCost+"元");
+                    mBottomInfo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            DriveRouteDetailActivity.newInstance(RoutePlanActivity.this,drivePath,mDriveRouteResult);
+                        }
+                    });
+                } else if (driveRouteResult != null && driveRouteResult.getPaths() == null) {
+                    Toast.makeText(MyApplication.applicationContext,"对不起，没有搜索到相关数据",Toast.LENGTH_SHORT).show();
+                }
 
+            } else {
+                Toast.makeText(MyApplication.applicationContext,"对不起，没有搜索到相关数据",Toast.LENGTH_SHORT).show();
+            }
+        } else {
+        }
     }
 
     @Override
