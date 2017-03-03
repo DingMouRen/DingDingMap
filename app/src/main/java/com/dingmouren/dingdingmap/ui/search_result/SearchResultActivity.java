@@ -67,7 +67,8 @@ public class SearchResultActivity extends BaseActivity implements LocationSource
     private LatLonPoint mStartPoint;//起点
     private LatLonPoint mEndPoint ;//终点
     private DecimalFormat decimalFormat;//保留小数点用的
-    private String mCurrentCity ;
+    private String mCurrentCityName;
+
 
     public static void newInstance(Activity activity, PoiItem poiItem ){
         Intent intent = new Intent(activity,SearchResultActivity.class);
@@ -83,8 +84,6 @@ public class SearchResultActivity extends BaseActivity implements LocationSource
     public void init(Bundle savedInstanceStae) {
         if (null != getIntent()){
         mPoiItem = getIntent().getParcelableExtra("poiItem");
-            mCurrentCity = mPoiItem.getCityName();
-            Log.e(TAG,"mCurrentCity:" + mCurrentCity);
         }
         destnationLatLng = new LatLng(mPoiItem.getLatLonPoint().getLatitude(),mPoiItem.getLatLonPoint().getLongitude());
         mEndPoint = new LatLonPoint(mPoiItem.getLatLonPoint().getLatitude(),mPoiItem.getLatLonPoint().getLongitude());
@@ -147,8 +146,7 @@ public class SearchResultActivity extends BaseActivity implements LocationSource
         });
 
         mFabToWhere.setOnClickListener(v -> {
-            Log.e(TAG,"mCurrentCity:" +mCurrentCity);
-            RoutePlanActivity.newInstance(this,mStartPoint,mEndPoint,mCurrentCity,mPoiItem.getTitle());
+            RoutePlanActivity.newInstance(this,mStartPoint,mEndPoint,mPoiItem,mCurrentCityName);
         });
     }
 
@@ -192,6 +190,7 @@ public class SearchResultActivity extends BaseActivity implements LocationSource
                 mMyLocationAdress = aMapLocation.getAddress();
                 myLatLng = new LatLng(aMapLocation.getLatitude(),aMapLocation.getLongitude());
                 mStartPoint = new LatLonPoint(aMapLocation.getLatitude(),aMapLocation.getLongitude());
+                mCurrentCityName = aMapLocation.getCity();
                 if (null != myLatLng && null != destnationLatLng){
                     decimalFormat = new DecimalFormat(".0");
                     mDistance.setText(decimalFormat.format(AMapUtils.calculateLineDistance(myLatLng,destnationLatLng)/1000) +"公里");

@@ -21,7 +21,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapOptions;
+import com.amap.api.maps.AMapUtils;
+import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
@@ -30,6 +37,7 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.route.BusRouteResult;
 import com.amap.api.services.route.DrivePath;
 import com.amap.api.services.route.DriveRouteResult;
@@ -53,6 +61,8 @@ import com.dingmouren.dingdingmap.util.WalkRouteOverlay;
 import com.orhanobut.logger.Logger;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
+import java.text.DecimalFormat;
+
 import butterknife.BindView;
 
 /**
@@ -60,7 +70,8 @@ import butterknife.BindView;
  */
 
 public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickListener,AMap.OnMarkerClickListener
-                        ,AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,RouteSearch.OnRouteSearchListener{
+                        ,AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,RouteSearch.OnRouteSearchListener
+                        ,LocationSource,AMapLocationListener {
     private static final String TAG = RoutePlanActivity.class.getName();
     @BindView(R.id.edit_start)  MaterialEditText mEditStart;
     @BindView(R.id.edit_end) MaterialEditText mEditEnd;
@@ -93,15 +104,21 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     private String mOrigin;
     private String mTarget;
     private UiSettings mUiSetting;
-
+    //定位
+    private OnLocationChangedListener mLocationChangedListener;//定位回调监听
+    private AMapLocationClient mLocationClient;//AMapLocationClient类对象
+    private AMapLocationClientOption mLocationOption;//定位参数对象
+    private String mCurrentCityCode;
+    private String mTargetCityCode;
+    private PoiItem mPoiItem;
     public static String[] ways = new String[]{"驾车","公交","步行","骑行"};
 
-    public static void newInstance(Activity activity,LatLonPoint startPoint,LatLonPoint endPoint,String cityName,String target){
+    public static void newInstance(Activity activity, LatLonPoint startPoint, LatLonPoint endPoint, PoiItem poiItem,String cityName){
         Intent intent = new Intent(activity,RoutePlanActivity.class);
         intent.putExtra("start_point",startPoint);
         intent.putExtra("end_point",endPoint);
+        intent.putExtra("poiItem",poiItem);
         intent.putExtra("city_name",cityName);
-        intent.putExtra("target",target);
         activity.startActivity(intent);
     }
     @Override
@@ -115,8 +132,9 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
             mStartPoint = getIntent().getParcelableExtra("start_point");
             mEndPoint = getIntent().getParcelableExtra("end_point");
             mCurrentCityName = getIntent().getStringExtra("city_name");
-            mTarget = getIntent().getStringExtra("target");
-            Log.e(TAG,"mCurrentCityName:" + mCurrentCityName);
+            mPoiItem = getIntent().getParcelableExtra("poiItem");
+            mTargetCityCode = mPoiItem.getCityCode();
+            Log.e(TAG,"目的城市编码：" + mTargetCityCode);
         }
 
     }
@@ -134,6 +152,10 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
             mAMap.addMarker(new MarkerOptions().position(AMapUtil.convertToLatLng(mStartPoint)).icon(BitmapDescriptorFactory.fromResource(R.mipmap.start)));
             mAMap.addMarker(new MarkerOptions().position(AMapUtil.convertToLatLng(mEndPoint)).icon(BitmapDescriptorFactory.fromResource(R.mipmap.end)));
         }
+        //定位
+        mAMap.setLocationSource(this);
+        mAMap.setMyLocationEnabled(true);
+        mAMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
 
         for (int i = 0; i < ways.length; i++) {
             mTabLayout.addTab(mTabLayout.newTab().setText(ways[i]));
@@ -172,6 +194,14 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
                         searchBusRoute();
                         break;
                     case ROUTE_TYPE_WALK:
+                        if (!mCurrentCityCode.equals(mTargetCityCode)){
+                            mMapView.setVisibility(View.GONE);
+                            mRecycler.setVisibility(View.GONE);
+                            mBottomInfo.setVisibility(View.GONE);
+                            mTvLogo.setVisibility(View.GONE);
+                            Toast.makeText(MyApplication.applicationContext,"太远啦，宝宝走不动~~~~(>_<)~~~~",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         mMapView.setVisibility(View.VISIBLE);
                         mRecycler.setVisibility(View.GONE);
                         mBottomInfo.setVisibility(View.VISIBLE);
@@ -179,6 +209,14 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
                         searchRouteResult(ROUTE_TYPE_WALK,RouteSearch.WALK_DEFAULT);
                         break;
                     case ROUTE_TYPE_RIDE:
+                        if (!mCurrentCityCode.equals(mTargetCityCode)){
+                            mMapView.setVisibility(View.GONE);
+                            mRecycler.setVisibility(View.GONE);
+                            mBottomInfo.setVisibility(View.GONE);
+                            mTvLogo.setVisibility(View.GONE);
+                            Toast.makeText(MyApplication.applicationContext,"太远啦，宝宝骑不动~~~~(>_<)~~~~",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         mMapView.setVisibility(View.VISIBLE);
                         mRecycler.setVisibility(View.GONE);
                         mBottomInfo.setVisibility(View.VISIBLE);
@@ -451,5 +489,40 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
             }
         } else {
          }
+    }
+
+    @Override
+    public void onLocationChanged(AMapLocation aMapLocation) {
+        if (null != mLocationChangedListener && null != aMapLocation){
+            if (null != aMapLocation && aMapLocation.getErrorCode() == 0){
+                mCurrentCityCode = aMapLocation.getCityCode();
+                Log.e(TAG,"当前城市编码：" + mCurrentCityCode);
+            }else {
+                Toast.makeText(MyApplication.applicationContext,"定位失败",Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void activate(OnLocationChangedListener onLocationChangedListener) {
+        mLocationChangedListener = onLocationChangedListener;
+        if (null == mLocationClient){
+            mLocationClient = new AMapLocationClient(this);
+            mLocationOption = new AMapLocationClientOption();
+            mLocationClient.setLocationListener(this);//设置定位监听
+            mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);//设置高精度定位模式
+            mLocationClient.setLocationOption(mLocationOption);
+            mLocationClient.startLocation();
+        }
+    }
+
+    @Override
+    public void deactivate() {
+        mLocationChangedListener = null;
+        if (null != mLocationClient){
+            mLocationClient.stopLocation();
+            mLocationClient.onDestroy();
+        }
+        mLocationClient = null;
     }
 }

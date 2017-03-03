@@ -181,7 +181,6 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         });
 
         mSearchBar.setOnClickListener(v -> {
-            Log.e(TAG,mCurrentCityName);
                 SearchActivity.newInstance(MainActivity.this,mCurrentCityName);
         });
     }
@@ -257,7 +256,6 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
             mLatitude = aMapLocation.getLatitude();
             mLongitude = aMapLocation.getLongitude();
             mCurrentCityName = aMapLocation.getCity();
-
 //            parseAMapLocation(aMapLocation);
             mLocationChangedListener.onLocationChanged(aMapLocation);//显示系统的小蓝点
             if (!isLocated) {
