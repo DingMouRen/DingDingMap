@@ -67,8 +67,6 @@ public class DriveSegmentListAdapter extends BaseAdapter {
 					.findViewById(R.id.bus_dir_icon_up);
 			holder.driveDirDown = (ImageView) convertView
 					.findViewById(R.id.bus_dir_icon_down);
-			holder.splitLine = (ImageView) convertView
-					.findViewById(R.id.bus_seg_split_line);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
@@ -79,14 +77,12 @@ public class DriveSegmentListAdapter extends BaseAdapter {
 			holder.driveLineName.setText("出发");
 			holder.driveDirUp.setVisibility(View.GONE);
 			holder.driveDirDown.setVisibility(View.VISIBLE);
-			holder.splitLine.setVisibility(View.GONE);
 			return convertView;
 		} else if (position == mItemList.size() - 1) {
 			holder.driveDirIcon.setImageResource(R.drawable.dir_end);
 			holder.driveLineName.setText("到达终点");
 			holder.driveDirUp.setVisibility(View.VISIBLE);
 			holder.driveDirDown.setVisibility(View.GONE);
-			holder.splitLine.setVisibility(View.VISIBLE);
 			return convertView;
 		} else {
 			String actionName = item.getAction();
@@ -95,7 +91,6 @@ public class DriveSegmentListAdapter extends BaseAdapter {
 			holder.driveLineName.setText(item.getInstruction());
 			holder.driveDirUp.setVisibility(View.VISIBLE);
 			holder.driveDirDown.setVisibility(View.VISIBLE);
-			holder.splitLine.setVisibility(View.VISIBLE);
 			return convertView;
 		}
 		
@@ -106,7 +101,6 @@ public class DriveSegmentListAdapter extends BaseAdapter {
 		ImageView driveDirIcon;
 		ImageView driveDirUp;
 		ImageView driveDirDown;
-		ImageView splitLine;
 	}
 
 }

@@ -62,8 +62,6 @@ public class RideSegmentListAdapter extends BaseAdapter {
 					.findViewById(R.id.bus_dir_icon_up);
 			holder.dirDown = (ImageView) convertView
 					.findViewById(R.id.bus_dir_icon_down);
-			holder.splitLine = (ImageView) convertView
-					.findViewById(R.id.bus_seg_split_line);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
@@ -74,7 +72,6 @@ public class RideSegmentListAdapter extends BaseAdapter {
 			holder.lineName.setText("出发");
 			holder.dirUp.setVisibility(View.INVISIBLE);
 			holder.dirDown.setVisibility(View.VISIBLE);
-			holder.splitLine.setVisibility(View.INVISIBLE);
 			return convertView;
 		} else if (position == mItemList.size() - 1) {
 			holder.dirIcon.setImageResource(R.drawable.dir_end);
@@ -83,7 +80,6 @@ public class RideSegmentListAdapter extends BaseAdapter {
 			holder.dirDown.setVisibility(View.INVISIBLE);
 			return convertView;
 		} else {
-			holder.splitLine.setVisibility(View.VISIBLE);
 			holder.dirUp.setVisibility(View.VISIBLE);
 			holder.dirDown.setVisibility(View.VISIBLE);
 			String actionName = item.getAction();
@@ -100,7 +96,6 @@ public class RideSegmentListAdapter extends BaseAdapter {
 		ImageView dirIcon;
 		ImageView dirUp;
 		ImageView dirDown;
-		ImageView splitLine;
 	}
 
 }

@@ -90,8 +90,6 @@ public class BusSegmentListAdapter extends BaseAdapter {
 					.findViewById(R.id.bus_dir_icon_up);
 			holder.busDirDown = (ImageView) convertView
 					.findViewById(R.id.bus_dir_icon_down);
-			holder.splitLine = (ImageView) convertView
-					.findViewById(R.id.bus_seg_split_line);
 			holder.expandContent = (LinearLayout) convertView
 					.findViewById(R.id.expand_content);
 			convertView.setTag(holder);
@@ -105,7 +103,6 @@ public class BusSegmentListAdapter extends BaseAdapter {
 			holder.busLineName.setText("出发");
 			holder.busDirUp.setVisibility(View.INVISIBLE);
 			holder.busDirDown.setVisibility(View.VISIBLE);
-			holder.splitLine.setVisibility(View.GONE);
 			holder.busStationNum.setVisibility(View.GONE);
 			holder.busExpandImage.setVisibility(View.GONE);
 			return convertView;
@@ -176,7 +173,6 @@ public class BusSegmentListAdapter extends BaseAdapter {
 		ImageView busExpandImage;
 		ImageView busDirUp;
 		ImageView busDirDown;
-		ImageView splitLine;
 		LinearLayout expandContent;
 		boolean arrowExpend = false;
 	}
