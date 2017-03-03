@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.services.route.BusPath;
@@ -39,6 +40,7 @@ public class BusRouteDetailActivity extends BaseActivity implements AMap.OnMapLo
     @BindView(R.id.firstline) TextView mFirstLine;
     @BindView(R.id.listview) ListView mListView;
     @BindView(R.id.mapview)   MapView mMapView;
+    @BindView(R.id.tv_logo) TextView mTvLogo;
     private BusPath mBuspath;
     private BusRouteResult mBusRouteResult;
     private AMap mMap;
@@ -46,6 +48,8 @@ public class BusRouteDetailActivity extends BaseActivity implements AMap.OnMapLo
     private BusSegmentListAdapter mBusSegmentListAdapter;
     private String duration;
     private String distinct;
+    private UiSettings mUiSettings;//操作控件类
+    private boolean isClicked;//地图只能被点击一次
 
     public static void newInstance(Activity activity, BusPath busPath, BusRouteResult busRouteResult){
         Intent intent = new Intent(activity,BusRouteDetailActivity.class);
@@ -73,7 +77,10 @@ public class BusRouteDetailActivity extends BaseActivity implements AMap.OnMapLo
 
         mMapView.onCreate(savedInstanceState);
         if (null == mMap) mMap = mMapView.getMap();
-
+        if (null == mUiSettings && null != mMap){
+            mUiSettings = mMap.getUiSettings();//获取操作控件类
+            mUiSettings.setLogoLeftMargin(getWindowManager().getDefaultDisplay().getWidth());//隐藏高德地图的Logo
+        }
         duration = AMapUtil.getFriendlyTime((int)mBuspath.getDuration());
         distinct = AMapUtil.getFriendlyLength((int)mBuspath.getDistance());
         mFirstLine.setText(duration+"("+distinct+")");
@@ -94,13 +101,15 @@ public class BusRouteDetailActivity extends BaseActivity implements AMap.OnMapLo
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.mapview){
+                if (item.getItemId() == R.id.mapview && !isClicked){
                     mListView.setVisibility(View.GONE);
                     mFirstLine.setVisibility(View.GONE);
                     mMapView.setVisibility(View.VISIBLE);
+                    mTvLogo.setVisibility(View.VISIBLE);
                     mMap.clear();
                     mBusrouteOverlay = new BusRouteOverlay(BusRouteDetailActivity.this,mMap,mBuspath,mBusRouteResult.getStartPos(),mBusRouteResult.getTargetPos());
                     mBusrouteOverlay.removeFromMap();
+                    isClicked = true;
                 }
                 return true;
             }

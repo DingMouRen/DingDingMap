@@ -40,4 +40,17 @@
         android:layout_below="@+id/toolbar"
         android:visibility="gone"
         />
+    <TextView
+        android:id="@+id/tv_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="钉钉地图"
+        android:textColor="@color/main_color"
+        android:layout_marginBottom="5dp"
+        android:textStyle="bold"
+        android:layout_marginLeft="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:visibility="gone"
+        />
 </RelativeLayout>
