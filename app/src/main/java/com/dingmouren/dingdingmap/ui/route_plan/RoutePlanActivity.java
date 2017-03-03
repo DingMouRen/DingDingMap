@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
@@ -73,6 +74,7 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     @BindView(R.id.secondline) TextView mSeconLine;
     @BindView(R.id.detail)   LinearLayout mDetail;
     @BindView(R.id.progressbar) ProgressBar mProgressBar;
+    @BindView(R.id.tv_logo) TextView mTvLogo;
 
     private AMap mAMap;
     private RouteSearch mRouteSearch;
@@ -90,6 +92,7 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     private RoutePlanBusAdapter mBusAdapter;
     private String mOrigin;
     private String mTarget;
+    private UiSettings mUiSetting;
 
     public static String[] ways = new String[]{"驾车","公交","步行","骑行"};
 
@@ -122,6 +125,10 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     public void initView(Bundle savedInstanceState) {
         mMapView.onCreate(savedInstanceState);
         if (null == mAMap) mAMap = mMapView.getMap();
+        if (null == mUiSetting && null != mAMap){
+            mUiSetting = mAMap.getUiSettings();
+            mUiSetting.setLogoLeftMargin(getWindowManager().getDefaultDisplay().getWidth());//隐藏高德地图的Logo
+        }
         mRouteSearch = new RouteSearch(this);
         if (null != mStartPoint && null != mEndPoint) {
             mAMap.addMarker(new MarkerOptions().position(AMapUtil.convertToLatLng(mStartPoint)).icon(BitmapDescriptorFactory.fromResource(R.mipmap.start)));
@@ -157,21 +164,25 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
                         mMapView.setVisibility(View.VISIBLE);
                         mRecycler.setVisibility(View.GONE);
                         mBottomInfo.setVisibility(View.VISIBLE);
+                        mTvLogo.setVisibility(View.VISIBLE);
                         searchRouteResult(ROUTE_TYPE_DRIVE,RouteSearch.DRIVING_SINGLE_DEFAULT);
                         break;
                     case ROUTE_TYPE_BUS:
+                        mTvLogo.setVisibility(View.GONE);
                         searchBusRoute();
                         break;
                     case ROUTE_TYPE_WALK:
                         mMapView.setVisibility(View.VISIBLE);
                         mRecycler.setVisibility(View.GONE);
                         mBottomInfo.setVisibility(View.VISIBLE);
+                        mTvLogo.setVisibility(View.VISIBLE);
                         searchRouteResult(ROUTE_TYPE_WALK,RouteSearch.WALK_DEFAULT);
                         break;
                     case ROUTE_TYPE_RIDE:
                         mMapView.setVisibility(View.VISIBLE);
                         mRecycler.setVisibility(View.GONE);
                         mBottomInfo.setVisibility(View.VISIBLE);
+                        mTvLogo.setVisibility(View.VISIBLE);
                         searchRouteResult(ROUTE_TYPE_RIDE,RouteSearch.RIDING_DEFAULT);
                         break;
                 }
