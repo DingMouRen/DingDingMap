@@ -2,14 +2,18 @@ package com.dingmouren.dingdingmap.ui.route_plan;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -45,6 +49,7 @@ import com.dingmouren.dingdingmap.util.AMapUtil;
 import com.dingmouren.dingdingmap.util.DrivingRouteOverlay;
 import com.dingmouren.dingdingmap.util.RideRouteOverlay;
 import com.dingmouren.dingdingmap.util.WalkRouteOverlay;
+import com.orhanobut.logger.Logger;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import butterknife.BindView;
@@ -75,22 +80,25 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     private BusRouteResult mBusRouteResult;
     private WalkRouteResult mWalkRouteResult;
     private RideRouteResult mRideRouteResult;
-    private LatLonPoint mStartPoint = new LatLonPoint(39.942295, 116.335891);//起点，116.335891,39.942295
-    private LatLonPoint mEndPoint = new LatLonPoint(39.995576, 116.481288);//终点，116.481288,39.995576
-    private LatLonPoint mStartPoint_bus = new LatLonPoint(40.818311, 111.670801);//起点，111.670801,40.818311
-    private LatLonPoint mEndPoint_bus = new LatLonPoint(44.433942, 125.184449);//终点，
-    private String mCurrentCityName = "北京";
+    private LatLonPoint mStartPoint ;//起点，
+    private LatLonPoint mEndPoint ;//终点，
+    private String mCurrentCityName ;
     private final int ROUTE_TYPE_DRIVE = 0;
     private final int ROUTE_TYPE_BUS = 1;
     private final int ROUTE_TYPE_WALK = 2;
     private final int ROUTE_TYPE_RIDE = 3;
-    private ProgressDialog progDialog = null;//搜索时进度条
     private RoutePlanBusAdapter mBusAdapter;
+    private String mOrigin;
+    private String mTarget;
 
     public static String[] ways = new String[]{"驾车","公交","步行","骑行"};
 
-    public static void newInstance(Activity activity,LatLonPoint startPoint,LatLonPoint endPoint){
+    public static void newInstance(Activity activity,LatLonPoint startPoint,LatLonPoint endPoint,String cityName,String target){
         Intent intent = new Intent(activity,RoutePlanActivity.class);
+        intent.putExtra("start_point",startPoint);
+        intent.putExtra("end_point",endPoint);
+        intent.putExtra("city_name",cityName);
+        intent.putExtra("target",target);
         activity.startActivity(intent);
     }
     @Override
@@ -99,12 +107,26 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     }
 
     @Override
+    public void init(Bundle savedInstanceStae) {
+        if (null != getIntent()){
+            mStartPoint = getIntent().getParcelableExtra("start_point");
+            mEndPoint = getIntent().getParcelableExtra("end_point");
+            mCurrentCityName = getIntent().getStringExtra("city_name");
+            mTarget = getIntent().getStringExtra("target");
+            Log.e(TAG,"mCurrentCityName:" + mCurrentCityName);
+        }
+
+    }
+
+    @Override
     public void initView(Bundle savedInstanceState) {
         mMapView.onCreate(savedInstanceState);
         if (null == mAMap) mAMap = mMapView.getMap();
         mRouteSearch = new RouteSearch(this);
-        mAMap.addMarker(new MarkerOptions().position(AMapUtil.convertToLatLng(mStartPoint)).icon(BitmapDescriptorFactory.fromResource(R.mipmap.start)));
-        mAMap.addMarker(new MarkerOptions().position(AMapUtil.convertToLatLng(mEndPoint)).icon(BitmapDescriptorFactory.fromResource(R.mipmap.end)));
+        if (null != mStartPoint && null != mEndPoint) {
+            mAMap.addMarker(new MarkerOptions().position(AMapUtil.convertToLatLng(mStartPoint)).icon(BitmapDescriptorFactory.fromResource(R.mipmap.start)));
+            mAMap.addMarker(new MarkerOptions().position(AMapUtil.convertToLatLng(mEndPoint)).icon(BitmapDescriptorFactory.fromResource(R.mipmap.end)));
+        }
 
         for (int i = 0; i < ways.length; i++) {
             mTabLayout.addTab(mTabLayout.newTab().setText(ways[i]));
@@ -112,6 +134,10 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
         mTabLayout.setScrollPosition(1,0,true);//滑动到指定为tab
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setHasFixedSize(true);
+
+        if (mTarget != null){
+            mEditEnd.setText(mTarget,TextView.BufferType.NORMAL);
+        }
     }
 
     @Override
@@ -131,7 +157,7 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
                         mMapView.setVisibility(View.VISIBLE);
                         mRecycler.setVisibility(View.GONE);
                         mBottomInfo.setVisibility(View.VISIBLE);
-                        searchRouteResult(ROUTE_TYPE_DRIVE,RouteSearch.DrivingDefault);
+                        searchRouteResult(ROUTE_TYPE_DRIVE,RouteSearch.DRIVING_SINGLE_DEFAULT);
                         break;
                     case ROUTE_TYPE_BUS:
                         searchBusRoute();
@@ -140,7 +166,7 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
                         mMapView.setVisibility(View.VISIBLE);
                         mRecycler.setVisibility(View.GONE);
                         mBottomInfo.setVisibility(View.VISIBLE);
-                        searchRouteResult(ROUTE_TYPE_WALK,RouteSearch.WalkDefault);
+                        searchRouteResult(ROUTE_TYPE_WALK,RouteSearch.WALK_DEFAULT);
                         break;
                     case ROUTE_TYPE_RIDE:
                         mMapView.setVisibility(View.VISIBLE);
@@ -157,6 +183,7 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+
 
     }
 
@@ -196,7 +223,7 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
         mMapView.setVisibility(View.GONE);
         mRecycler.setVisibility(View.VISIBLE);
         mBottomInfo.setVisibility(View.GONE);
-        searchRouteResult(ROUTE_TYPE_BUS,RouteSearch.BUS_DEFAULT);
+        searchRouteResult(ROUTE_TYPE_BUS,RouteSearch.BUS_LEASE_WALK);
     }
 
     /**
@@ -222,6 +249,7 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
                 mRouteSearch.calculateDriveRouteAsyn(driveRouteQuery);
                 break;
             case ROUTE_TYPE_BUS:
+                Log.e(TAG,"mCurrentCityName:" + mCurrentCityName);
                 RouteSearch.BusRouteQuery busRouteQuery = new RouteSearch.BusRouteQuery(fromAndTo,mode,mCurrentCityName,0);//0表示不计算夜班车
                 mRouteSearch.calculateBusRouteAsyn(busRouteQuery);
                 break;
@@ -277,7 +305,8 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
                         BusRouteDetailActivity.newInstance(RoutePlanActivity.this,busPath,busRouteResult);
                     });
                     mRecycler.setAdapter(mBusAdapter);
-                } else if (result != null && result.getPaths() == null) {
+
+                } else if (result != null && result.getPaths().size() == 0) {
                     Toast.makeText(MyApplication.applicationContext,"~~(>_<)~~ 没有搜索到相关数据",Toast.LENGTH_SHORT).show();
                 }
             } else {
@@ -313,7 +342,10 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
                     String des = AMapUtil.getFriendlyTime(dur)+"("+AMapUtil.getFriendlyLength(dis)+")";
                     mFirstLine.setText(des);
                     int taxiCost = (int) mDriveRouteResult.getTaxiCost();
-                    mSeconLine.setText("打车约"+taxiCost+"元");
+                    if (taxiCost != 0) {
+                        mSeconLine.setVisibility(View.VISIBLE);
+                        mSeconLine.setText("打车约" + taxiCost + "元");
+                    }
                     mBottomInfo.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -393,6 +425,7 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
                     int dur = (int) ridePath.getDuration();
                     String des = AMapUtil.getFriendlyTime(dur)+"("+AMapUtil.getFriendlyLength(dis)+")";
                     mFirstLine.setText(des);
+                    mSeconLine.setVisibility(View.GONE);
                     mBottomInfo.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

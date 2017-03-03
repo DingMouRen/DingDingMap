@@ -1,6 +1,8 @@
 package com.dingmouren.dingdingmap.ui.search;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -21,6 +23,7 @@ import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.ui.adapter.SearchResultAdapter;
 import com.dingmouren.dingdingmap.ui.search_result.SearchResultActivity;
 import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.orhanobut.logger.Logger;
 
 import java.util.List;
 
@@ -39,6 +42,13 @@ public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiS
     private PoiSearch mPoiSearch;//POI搜索
     private PoiSearch.Query mPoitQuery;//POI查询条件类
     private InputMethodManager inputMethodManager;
+    private String mCurrentCity;
+
+    public static void newInstance(Activity activity,String cityName){
+        Intent intent = new Intent(activity,SearchActivity.class);
+        intent.putExtra("city_name",cityName);
+        activity.startActivity(intent);
+    }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +59,10 @@ public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiS
     }
 
     private void init() {
+        if (null != getIntent()){
+            mCurrentCity = getIntent().getStringExtra("city_name");
+            Log.e(TAG,"mCurrentCity:" + mCurrentCity);
+        }
         if (null == inputMethodManager)inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         if (null == mSearchResultAdapter) mSearchResultAdapter = new SearchResultAdapter();
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -66,8 +80,8 @@ public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiS
 
             @Override
             public void onSearchConfirmed(CharSequence charSequence) {
-                Log.e(TAG,"搜索："+charSequence);
-                mPoitQuery = new PoiSearch.Query(String.valueOf(charSequence),"","聊城");
+                Log.e(TAG,"mCurrentCity：" + mCurrentCity);
+                mPoitQuery = new PoiSearch.Query(String.valueOf(charSequence),"",mCurrentCity);
                 mPoitQuery.setPageSize(10);
                 mPoitQuery.setPageNum(1);
                 mPoiSearch = new PoiSearch(SearchActivity.this,mPoitQuery);
@@ -85,25 +99,24 @@ public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiS
 
             }
         });
-        mSearchResultAdapter.setOnItemClickListener((view, poiItem, position) -> SearchResultActivity.newInstance(SearchActivity.this,poiItem));
+        mSearchResultAdapter.setOnItemClickListener((view, poiItem, position) -> {
+            SearchResultActivity.newInstance(SearchActivity.this,poiItem);
+        });
+
     }
 
     @Override
     public void onPoiSearched(PoiResult poiResult, int rCode) {
-//        Log.e(TAG,"rCode："+rCode);
-//        Log.e(TAG,"poiResult："+poiResult.toString());
-//        List<PoiItem> poiItems = poiResult.getPois();
-//        Log.e(TAG,"poiItems："+poiItems.toString());
-//        for (int i = 0; i < poiItems.size(); i++) {
-//            Log.e(TAG,"地址："+poiItems.get(i).getSnippet());
-//        }
-//        mSearchResultAdapter.setList(poiItems);
-//        mSearchResultAdapter.notifyDataSetChanged();
         if (rCode == AMapException.CODE_AMAP_SUCCESS /*&& null != poiResult && null != poiResult.getQuery() && poiResult.getQuery() == mPoitQuery*/){
-            List<PoiItem> poiItems = poiResult.getPois();
-            mSearchResultAdapter.setList(poiItems);
-            mSearchResultAdapter.notifyDataSetChanged();
-            mProgressBar.setVisibility(View.INVISIBLE);
+            if (poiResult.getPois().size() != 0) {
+                List<PoiItem> poiItems = poiResult.getPois();
+                mSearchResultAdapter.setList(poiItems);
+                mSearchResultAdapter.notifyDataSetChanged();
+                mProgressBar.setVisibility(View.INVISIBLE);
+            }else {
+                mProgressBar.setVisibility(View.INVISIBLE);
+                Toast.makeText(MyApplication.applicationContext,"对不起,没有搜索到相关数据",Toast.LENGTH_SHORT).show();
+            }
         }else {
             Toast.makeText(MyApplication.applicationContext,"对不起,没有搜索到相关数据",Toast.LENGTH_SHORT).show();
         }

@@ -8,18 +8,10 @@
     android:fitsSystemWindows="true"
     >
 
-    <android.support.design.widget.CollapsingToolbarLayout
-        android:layout_width="match_parent"
-        android:layout_height="139dp"
-        app:layout_scrollFlags="scroll|snap"
-        android:fitsSystemWindows="true"
-        >
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/main_color"
-            app:layout_collapseMode="parallax"
-            app:layout_collapseParallaxMultiplier="0.7"
             >
 
             <RelativeLayout
@@ -62,6 +54,7 @@
                         android:layout_toRightOf="@+id/img_start"
                         android:layout_marginLeft="@dimen/activity_horizontal_margin"
                         android:hint="我的位置"
+                        android:focusable="false"
                         android:textColorHint="@android:color/white"
                         app:met_baseColor="@android:color/white"
                         android:textColor="@android:color/white"
@@ -87,6 +80,11 @@
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/img_end"
                         android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                        android:textColorHint="@android:color/white"
+                        app:met_baseColor="@android:color/white"
+                        android:textColor="@android:color/white"
+                        android:focusable="false"
+                        android:singleLine="true"
                         android:hint="目的地"
                         />
                 </RelativeLayout>
@@ -113,7 +111,6 @@
 
                 />
         </RelativeLayout>
-    </android.support.design.widget.CollapsingToolbarLayout>
 
 
     <android.support.design.widget.TabLayout

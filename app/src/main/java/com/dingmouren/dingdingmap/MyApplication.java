@@ -2,6 +2,10 @@ package com.dingmouren.dingdingmap;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
+
+import com.orhanobut.logger.*;
+import com.orhanobut.logger.BuildConfig;
 
 
 /**
@@ -14,6 +18,6 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         applicationContext = this;
-
+        Logger.init();
     }
 }

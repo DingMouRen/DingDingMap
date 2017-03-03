@@ -49,10 +49,12 @@ import com.dingmouren.dingdingmap.ui.route_plan.RoutePlanActivity;
 import com.dingmouren.dingdingmap.ui.search.SearchActivity;
 import com.dingmouren.dingdingmap.util.SPUtil;
 import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.orhanobut.logger.Logger;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 import butterknife.BindView;
@@ -75,6 +77,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     private double mLongitude;//经度
     private Marker mLocationMarker;
     boolean isLocated = false;//首次进来定位用的
+    private String mCurrentCityName;//定位当前城市名称
 
     /**
      * 需要进行检测的权限数组
@@ -177,7 +180,10 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
             }
         });
 
-        mSearchBar.setOnClickListener(v -> startActivity(new Intent(MainActivity.this,SearchActivity.class)));
+        mSearchBar.setOnClickListener(v -> {
+            Log.e(TAG,mCurrentCityName);
+                SearchActivity.newInstance(MainActivity.this,mCurrentCityName);
+        });
     }
 
     @Override
@@ -250,6 +256,8 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         if (0 == aMapLocation.getErrorCode()){//定位成功，成功获取到aMapLocation的信息
             mLatitude = aMapLocation.getLatitude();
             mLongitude = aMapLocation.getLongitude();
+            mCurrentCityName = aMapLocation.getCity();
+
 //            parseAMapLocation(aMapLocation);
             mLocationChangedListener.onLocationChanged(aMapLocation);//显示系统的小蓝点
             if (!isLocated) {
