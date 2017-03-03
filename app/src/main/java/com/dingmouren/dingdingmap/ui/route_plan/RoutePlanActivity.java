@@ -28,6 +28,7 @@ import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.BusRouteResult;
 import com.amap.api.services.route.DrivePath;
 import com.amap.api.services.route.DriveRouteResult;
+import com.amap.api.services.route.RidePath;
 import com.amap.api.services.route.RideRouteResult;
 import com.amap.api.services.route.RouteSearch;
 import com.amap.api.services.route.WalkPath;
@@ -38,9 +39,11 @@ import com.dingmouren.dingdingmap.base.BaseActivity;
 import com.dingmouren.dingdingmap.ui.adapter.RoutePlanBusAdapter;
 import com.dingmouren.dingdingmap.ui.detail.BusRouteDetailActivity;
 import com.dingmouren.dingdingmap.ui.detail.DriveRouteDetailActivity;
+import com.dingmouren.dingdingmap.ui.detail.RideRouteDetailActivity;
 import com.dingmouren.dingdingmap.ui.detail.WalkRouteDetailActivity;
 import com.dingmouren.dingdingmap.util.AMapUtil;
 import com.dingmouren.dingdingmap.util.DrivingRouteOverlay;
+import com.dingmouren.dingdingmap.util.RideRouteOverlay;
 import com.dingmouren.dingdingmap.util.WalkRouteOverlay;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
@@ -71,6 +74,7 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     private DriveRouteResult mDriveRouteResult;
     private BusRouteResult mBusRouteResult;
     private WalkRouteResult mWalkRouteResult;
+    private RideRouteResult mRideRouteResult;
     private LatLonPoint mStartPoint = new LatLonPoint(39.942295, 116.335891);//起点，116.335891,39.942295
     private LatLonPoint mEndPoint = new LatLonPoint(39.995576, 116.481288);//终点，116.481288,39.995576
     private LatLonPoint mStartPoint_bus = new LatLonPoint(40.818311, 111.670801);//起点，111.670801,40.818311
@@ -139,6 +143,10 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
                         searchRouteResult(ROUTE_TYPE_WALK,RouteSearch.WalkDefault);
                         break;
                     case ROUTE_TYPE_RIDE:
+                        mMapView.setVisibility(View.VISIBLE);
+                        mRecycler.setVisibility(View.GONE);
+                        mBottomInfo.setVisibility(View.VISIBLE);
+                        searchRouteResult(ROUTE_TYPE_RIDE,RouteSearch.RIDING_DEFAULT);
                         break;
                 }
             }
@@ -222,6 +230,8 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
                 mRouteSearch.calculateWalkRouteAsyn(walkRouteQuery);
                 break;
             case ROUTE_TYPE_RIDE:
+                RouteSearch.RideRouteQuery rideRouteQuery = new RouteSearch.RideRouteQuery(fromAndTo,mode);
+                mRouteSearch.calculateRideRouteAsyn(rideRouteQuery);
                 break;
         }
     }
@@ -321,9 +331,10 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
         }
     }
 
-    @Override
+    @Override//步行路线搜索结果回调
     public void onWalkRouteSearched(WalkRouteResult walkRouteResult, int rCode) {
         mProgressBar.setVisibility(View.GONE);
+        mAMap.clear();
         if (rCode == AMapException.CODE_AMAP_SUCCESS) {
             if (walkRouteResult != null && walkRouteResult.getPaths() != null) {
                 if (walkRouteResult.getPaths().size() > 0) {
@@ -361,8 +372,40 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
         }
     }
 
-    @Override
-    public void onRideRouteSearched(RideRouteResult rideRouteResult, int i) {
-
+    @Override//骑行路线搜索结果回调
+    public void onRideRouteSearched(RideRouteResult rideRouteResult, int rCode) {
+        mProgressBar.setVisibility(View.GONE);
+        mAMap.clear();
+        if (rCode == AMapException.CODE_AMAP_SUCCESS) {
+            if (rideRouteResult != null && rideRouteResult.getPaths() != null) {
+                if (rideRouteResult.getPaths().size() > 0) {
+                    mRideRouteResult = rideRouteResult;
+                    final RidePath ridePath = mRideRouteResult.getPaths()
+                            .get(0);
+                    RideRouteOverlay rideRouteOverlay = new RideRouteOverlay(
+                            this, mAMap, ridePath,
+                            mRideRouteResult.getStartPos(),
+                            mRideRouteResult.getTargetPos());
+                    rideRouteOverlay.removeFromMap();
+                    rideRouteOverlay.addToMap();
+                    rideRouteOverlay.zoomToSpan();
+                    int dis = (int) ridePath.getDistance();
+                    int dur = (int) ridePath.getDuration();
+                    String des = AMapUtil.getFriendlyTime(dur)+"("+AMapUtil.getFriendlyLength(dis)+")";
+                    mFirstLine.setText(des);
+                    mBottomInfo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            RideRouteDetailActivity.newInstance(RoutePlanActivity.this,ridePath);
+                        }
+                    });
+                } else if (rideRouteResult != null && rideRouteResult.getPaths() == null) {
+                    Toast.makeText(MyApplication.applicationContext,"对不起，没有搜索到相关数据",Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(MyApplication.applicationContext,"对不起，没有搜索到相关数据",Toast.LENGTH_SHORT).show();
+            }
+        } else {
+         }
     }
 }
