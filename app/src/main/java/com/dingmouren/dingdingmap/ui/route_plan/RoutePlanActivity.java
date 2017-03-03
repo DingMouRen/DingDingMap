@@ -30,6 +30,7 @@ import com.amap.api.services.route.DrivePath;
 import com.amap.api.services.route.DriveRouteResult;
 import com.amap.api.services.route.RideRouteResult;
 import com.amap.api.services.route.RouteSearch;
+import com.amap.api.services.route.WalkPath;
 import com.amap.api.services.route.WalkRouteResult;
 import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
@@ -37,8 +38,10 @@ import com.dingmouren.dingdingmap.base.BaseActivity;
 import com.dingmouren.dingdingmap.ui.adapter.RoutePlanBusAdapter;
 import com.dingmouren.dingdingmap.ui.detail.BusRouteDetailActivity;
 import com.dingmouren.dingdingmap.ui.detail.DriveRouteDetailActivity;
+import com.dingmouren.dingdingmap.ui.detail.WalkRouteDetailActivity;
 import com.dingmouren.dingdingmap.util.AMapUtil;
 import com.dingmouren.dingdingmap.util.DrivingRouteOverlay;
+import com.dingmouren.dingdingmap.util.WalkRouteOverlay;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import butterknife.BindView;
@@ -132,6 +135,8 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
                     case ROUTE_TYPE_WALK:
                         mMapView.setVisibility(View.VISIBLE);
                         mRecycler.setVisibility(View.GONE);
+                        mBottomInfo.setVisibility(View.VISIBLE);
+                        searchRouteResult(ROUTE_TYPE_WALK,RouteSearch.WalkDefault);
                         break;
                     case ROUTE_TYPE_RIDE:
                         break;
@@ -317,8 +322,43 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     }
 
     @Override
-    public void onWalkRouteSearched(WalkRouteResult walkRouteResult, int i) {
+    public void onWalkRouteSearched(WalkRouteResult walkRouteResult, int rCode) {
+        mProgressBar.setVisibility(View.GONE);
+        if (rCode == AMapException.CODE_AMAP_SUCCESS) {
+            if (walkRouteResult != null && walkRouteResult.getPaths() != null) {
+                if (walkRouteResult.getPaths().size() > 0) {
+                    mWalkRouteResult = walkRouteResult;
+                    final WalkPath walkPath = mWalkRouteResult.getPaths()
+                            .get(0);
+                    WalkRouteOverlay walkRouteOverlay = new WalkRouteOverlay(
+                            this, mAMap, walkPath,
+                            mWalkRouteResult.getStartPos(),
+                            mWalkRouteResult.getTargetPos());
+                    walkRouteOverlay.removeFromMap();
+                    walkRouteOverlay.addToMap();
+                    walkRouteOverlay.zoomToSpan();
+                    int dis = (int) walkPath.getDistance();
+                    int dur = (int) walkPath.getDuration();
+                    String des = AMapUtil.getFriendlyTime(dur)+"("+AMapUtil.getFriendlyLength(dis)+")";
+                    mFirstLine.setText(des);
+                    mSeconLine.setVisibility(View.GONE);
+                    mBottomInfo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            WalkRouteDetailActivity.newInstance(RoutePlanActivity.this,walkPath,mWalkRouteResult);
+                        }
+                    });
+                } else if (walkRouteResult != null && walkRouteResult.getPaths() == null) {
+                    Toast.makeText(MyApplication.applicationContext,"对不起，没有搜索到相关数据",Toast.LENGTH_SHORT).show();
 
+                }
+
+            } else {
+                Toast.makeText(MyApplication.applicationContext,"对不起，没有搜索到相关数据",Toast.LENGTH_SHORT).show();
+
+            }
+        } else {
+        }
     }
 
     @Override

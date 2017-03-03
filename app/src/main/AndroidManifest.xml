@@ -70,6 +70,8 @@
             android:launchMode="singleTask"/>
         <activity android:name=".ui.detail.DriveRouteDetailActivity"
             android:launchMode="singleTask"/>
+        <activity android:name=".ui.detail.WalkRouteDetailActivity"
+            android:launchMode="singleTask"/>
 
         <service android:name="com.amap.api.location.APSService"/>
     </application>
