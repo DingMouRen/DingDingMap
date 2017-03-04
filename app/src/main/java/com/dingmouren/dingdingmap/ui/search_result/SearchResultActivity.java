@@ -147,6 +147,7 @@ public class SearchResultActivity extends BaseActivity implements LocationSource
 
         mFabToWhere.setOnClickListener(v -> {
             RoutePlanActivity.newInstance(this,mStartPoint,mEndPoint,mPoiItem,mCurrentCityName,"search_result");
+            finish();
         });
     }
 

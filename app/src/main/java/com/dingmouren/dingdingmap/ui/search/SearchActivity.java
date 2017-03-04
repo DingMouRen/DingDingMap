@@ -101,6 +101,7 @@ public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiS
         });
         mSearchResultAdapter.setOnItemClickListener((view, poiItem, position) -> {
             SearchResultActivity.newInstance(SearchActivity.this,poiItem);
+            finish();
         });
 
     }
