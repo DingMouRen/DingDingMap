@@ -20,8 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:singleLine="true"
+        android:text="靓仔 输入起点和终点吧O(∩_∩)O"
         android:textColor="#333333"
-        android:text="66分钟（6公里）"
         android:textSize="16sp" />
 
     <TextView
@@ -30,7 +30,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:singleLine="true"
-        android:text="打车约66元"
         android:layout_marginTop="5dp"
         android:textColor="#999999"
         android:textSize="13sp"

@@ -65,4 +65,6 @@ dependencies {
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
     /*日志*/
     compile 'com.orhanobut:logger:1.15'
+    /*组件通信*/
+    compile 'org.greenrobot:eventbus:3.0.0'
 }

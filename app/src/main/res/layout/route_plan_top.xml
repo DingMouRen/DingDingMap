@@ -54,7 +54,6 @@
                         android:layout_toRightOf="@+id/img_start"
                         android:layout_marginLeft="@dimen/activity_horizontal_margin"
                         android:hint="我的位置"
-                        android:focusable="false"
                         android:textColorHint="@android:color/white"
                         app:met_baseColor="@android:color/white"
                         android:textColor="@android:color/white"
@@ -83,7 +82,6 @@
                         android:textColorHint="@android:color/white"
                         app:met_baseColor="@android:color/white"
                         android:textColor="@android:color/white"
-                        android:focusable="false"
                         android:singleLine="true"
                         android:hint="目的地"
                         />

@@ -13,12 +13,7 @@
             android:paddingTop="@dimen/search_bar_padding"
             app:hint="查找地点、公交、地铁" />
 
-   <!-- <fragment
-        android:id="@+id/map"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/search_bar"
-        class="com.amap.api.maps.SupportMapFragment" />-->
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"

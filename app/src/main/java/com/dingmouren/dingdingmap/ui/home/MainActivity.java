@@ -197,8 +197,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
                     Toast.makeText(MyApplication.applicationContext,"附近",Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.linear_route:
-                    Toast.makeText(MyApplication.applicationContext,"路线",Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(MainActivity.this, RoutePlanActivity.class));
+                    RoutePlanActivity.newInstance(MainActivity.this,null,null,null,mCurrentCityName,"main");
                     break;
                 case R.id.linear_mine:
                     Toast.makeText(MyApplication.applicationContext,"我的",Toast.LENGTH_SHORT).show();

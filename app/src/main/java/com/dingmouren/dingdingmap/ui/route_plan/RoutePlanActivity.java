@@ -28,6 +28,7 @@ import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.AMapUtils;
+import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
@@ -46,20 +47,28 @@ import com.amap.api.services.route.RideRouteResult;
 import com.amap.api.services.route.RouteSearch;
 import com.amap.api.services.route.WalkPath;
 import com.amap.api.services.route.WalkRouteResult;
+import com.dingmouren.dingdingmap.Constant;
 import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.base.BaseActivity;
+import com.dingmouren.dingdingmap.event.EventPoint;
 import com.dingmouren.dingdingmap.ui.adapter.RoutePlanBusAdapter;
 import com.dingmouren.dingdingmap.ui.detail.BusRouteDetailActivity;
 import com.dingmouren.dingdingmap.ui.detail.DriveRouteDetailActivity;
 import com.dingmouren.dingdingmap.ui.detail.RideRouteDetailActivity;
 import com.dingmouren.dingdingmap.ui.detail.WalkRouteDetailActivity;
+import com.dingmouren.dingdingmap.ui.search.RoutePlanSearchActivity;
 import com.dingmouren.dingdingmap.util.AMapUtil;
 import com.dingmouren.dingdingmap.util.DrivingRouteOverlay;
 import com.dingmouren.dingdingmap.util.RideRouteOverlay;
+import com.dingmouren.dingdingmap.util.SPUtil;
 import com.dingmouren.dingdingmap.util.WalkRouteOverlay;
 import com.orhanobut.logger.Logger;
 import com.rengwuxian.materialedittext.MaterialEditText;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.DecimalFormat;
 
@@ -101,8 +110,6 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     private final int ROUTE_TYPE_WALK = 2;
     private final int ROUTE_TYPE_RIDE = 3;
     private RoutePlanBusAdapter mBusAdapter;
-    private String mOrigin;
-    private String mTarget;
     private UiSettings mUiSetting;
     //定位
     private OnLocationChangedListener mLocationChangedListener;//定位回调监听
@@ -111,14 +118,16 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     private String mCurrentCityCode;
     private String mTargetCityCode;
     private PoiItem mPoiItem;
+    private String mTag;//标记  是否隐藏软键盘
     public static String[] ways = new String[]{"驾车","公交","步行","骑行"};
 
-    public static void newInstance(Activity activity, LatLonPoint startPoint, LatLonPoint endPoint, PoiItem poiItem,String cityName){
+    public static void newInstance(Activity activity, LatLonPoint startPoint, LatLonPoint endPoint, PoiItem poiItem,String cityName,String tag){
         Intent intent = new Intent(activity,RoutePlanActivity.class);
         intent.putExtra("start_point",startPoint);
         intent.putExtra("end_point",endPoint);
         intent.putExtra("poiItem",poiItem);
         intent.putExtra("city_name",cityName);
+        intent.putExtra("tag",tag);
         activity.startActivity(intent);
     }
     @Override
@@ -133,25 +142,26 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
             mEndPoint = getIntent().getParcelableExtra("end_point");
             mCurrentCityName = getIntent().getStringExtra("city_name");
             mPoiItem = getIntent().getParcelableExtra("poiItem");
-            mTargetCityCode = mPoiItem.getCityCode();
-            Log.e(TAG,"目的城市编码：" + mTargetCityCode);
+            mTag = getIntent().getStringExtra("tag");
+            if (null != mPoiItem) {
+                mTargetCityCode = mPoiItem.getCityCode();
+            }
         }
 
     }
 
     @Override
     public void initView(Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
         mMapView.onCreate(savedInstanceState);
         if (null == mAMap) mAMap = mMapView.getMap();
         if (null == mUiSetting && null != mAMap){
             mUiSetting = mAMap.getUiSettings();
             mUiSetting.setLogoLeftMargin(getWindowManager().getDefaultDisplay().getWidth());//隐藏高德地图的Logo
         }
+
         mRouteSearch = new RouteSearch(this);
-        if (null != mStartPoint && null != mEndPoint) {
-            mAMap.addMarker(new MarkerOptions().position(AMapUtil.convertToLatLng(mStartPoint)).icon(BitmapDescriptorFactory.fromResource(R.mipmap.start)));
-            mAMap.addMarker(new MarkerOptions().position(AMapUtil.convertToLatLng(mEndPoint)).icon(BitmapDescriptorFactory.fromResource(R.mipmap.end)));
-        }
+        drawStartEnd();
         //定位
         mAMap.setLocationSource(this);
         mAMap.setMyLocationEnabled(true);
@@ -164,10 +174,24 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setHasFixedSize(true);
 
-        if (mTarget != null){
-            mEditEnd.setText(mTarget,TextView.BufferType.NORMAL);
+        if (mTag.equals("search_result")){//焦点
+            mEditStart.setFocusable(false);
+            mEditEnd.setFocusable(false);
+        }else {
+            mEditStart.setText("输入起点",TextView.BufferType.NORMAL);
+            mEditStart.setFocusable(true);
+            mEditEnd.setText("目的地",TextView.BufferType.NORMAL);
+            mEditEnd.setFocusable(true);
         }
+        if (null != mPoiItem &&mPoiItem.getTitle() != null){
+            mEditEnd.setText(mPoiItem.getTitle(),TextView.BufferType.NORMAL);
+        }
+
+
+
     }
+
+
 
     @Override
     public void initListener() {
@@ -232,7 +256,8 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
-
+        mEditStart.setOnClickListener(v -> RoutePlanSearchActivity.newInstance(RoutePlanActivity.this,"start"));
+        mEditEnd.setOnClickListener(v -> RoutePlanSearchActivity.newInstance(RoutePlanActivity.this,"end"));
 
     }
 
@@ -263,6 +288,7 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     protected void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     /**
@@ -282,11 +308,11 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
      */
     private void searchRouteResult(int routeType, int mode){
         if (null == mStartPoint){
-            Toast.makeText(MyApplication.applicationContext,"起点未设置",Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyApplication.applicationContext,"先设置起点吧(*^__^*)",Toast.LENGTH_SHORT).show();
             return;
         }
         if (null == mEndPoint){
-            Toast.makeText(MyApplication.applicationContext,"终点未设置",Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyApplication.applicationContext,"还要设置终点哟(*^__^*)",Toast.LENGTH_SHORT).show();
             return;
         }
         mProgressBar.setVisibility(View.VISIBLE);
@@ -496,7 +522,6 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
         if (null != mLocationChangedListener && null != aMapLocation){
             if (null != aMapLocation && aMapLocation.getErrorCode() == 0){
                 mCurrentCityCode = aMapLocation.getCityCode();
-                Log.e(TAG,"当前城市编码：" + mCurrentCityCode);
             }else {
                 Toast.makeText(MyApplication.applicationContext,"定位失败",Toast.LENGTH_SHORT).show();
             }
@@ -524,5 +549,32 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
             mLocationClient.onDestroy();
         }
         mLocationClient = null;
+    }
+
+    /**
+     * 添加起点和终点的Marker
+     */
+    private void drawStartEnd() {
+        if (null != mStartPoint && null != mEndPoint) {
+            mAMap.addMarker(new MarkerOptions().position(AMapUtil.convertToLatLng(mStartPoint)).icon(BitmapDescriptorFactory.fromResource(R.mipmap.start)));
+            mAMap.addMarker(new MarkerOptions().position(AMapUtil.convertToLatLng(mEndPoint)).icon(BitmapDescriptorFactory.fromResource(R.mipmap.end)));
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN ,sticky = true)
+    public void getStartOrEnd(EventPoint eventPoint){
+        if (eventPoint.getTag() == 0){
+            mEditStart.setText(eventPoint.getTitle(), TextView.BufferType.NORMAL);
+            mStartPoint = eventPoint.getLatLonPoint();
+            mCurrentCityCode = eventPoint.getCityCode();
+            Log.e(TAG,"startCode:" + mCurrentCityCode);
+        }else if(eventPoint.getTag() == 1){
+            mEditEnd.setText(eventPoint.getTitle(), TextView.BufferType.NORMAL);
+            mEndPoint = eventPoint.getLatLonPoint();
+            mTargetCityCode = eventPoint.getCityCode();
+            Log.e(TAG,"targetCode:" + mTargetCityCode);
+            drawStartEnd();
+            searchBusRoute();
+        }
     }
 }

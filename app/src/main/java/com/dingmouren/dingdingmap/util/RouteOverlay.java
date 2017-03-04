@@ -119,12 +119,10 @@ public class RouteOverlay {
 		startMarker = mAMap.addMarker((new MarkerOptions())
 				.position(startPoint).icon(getStartBitmapDescriptor())
 				.title("\u8D77\u70B9"));
-		// startMarker.showInfoWindow();
+//		 startMarker.showInfoWindow();
 
 		endMarker = mAMap.addMarker((new MarkerOptions()).position(endPoint)
 				.icon(getEndBitmapDescriptor()).title("\u7EC8\u70B9"));
-		// mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPoint,
-		// getShowRouteZoom()));
 	}
 	/**
 	 * 移动镜头到当前的视角。
@@ -137,7 +135,7 @@ public class RouteOverlay {
 			try {
 				LatLngBounds bounds = getLatLngBounds();
 				mAMap.animateCamera(CameraUpdateFactory
-						.newLatLngBounds(bounds, 50));
+						.newLatLngBounds(bounds, Dp2Sp2PxUtil.dp2px(50)));
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
