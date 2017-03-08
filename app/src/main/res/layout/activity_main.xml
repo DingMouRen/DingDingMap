@@ -11,7 +11,6 @@
         android:id="@+id/mapview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/main_bottom_height"
          />
 
 
@@ -24,8 +23,23 @@
         android:paddingRight="@dimen/search_bar_padding"
         android:paddingTop="@dimen/search_bar_padding"
         app:hint="查找地点、公交、地铁" />
-    <include
-        layout="@layout/main_bottom_view" />
+   <!-- <include
+        layout="@layout/main_bottom_view" />-->
+    <com.nightonke.boommenu.BoomMenuButton
+        android:id="@+id/bmb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:alpha="0.8"
+        app:bmb_buttonEnum="simpleCircle"
+        app:bmb_piecePlaceEnum="piecePlace_dot_9_1"
+        app:bmb_buttonPlaceEnum="buttonPlace_sc_9_1"
+        app:bmb_showDuration="1000"
+        app:bmb_hideDuration="500"
+        />
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_location"
         android:layout_width="wrap_content"
@@ -37,7 +51,7 @@
         app:fab_size="mini"
         android:alpha="0.8"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
         android:layout_marginLeft="5dp"
         />
     <android.support.design.widget.FloatingActionButton
@@ -77,9 +91,8 @@
         android:textStyle="bold"
         android:textColor="@color/main_color"
         android:background="@android:color/transparent"
-        android:layout_marginRight="@dimen/main_bottom_height"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="55dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
         />
 </RelativeLayout>

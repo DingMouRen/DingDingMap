@@ -47,8 +47,16 @@ import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.base.BaseActivity;
 import com.dingmouren.dingdingmap.ui.route_plan.RoutePlanActivity;
 import com.dingmouren.dingdingmap.ui.search.SearchActivity;
+import com.dingmouren.dingdingmap.util.BmbBuilderManager;
 import com.dingmouren.dingdingmap.util.SPUtil;
 import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.nightonke.boommenu.Animation.OrderEnum;
+import com.nightonke.boommenu.BoomButtons.BoomButton;
+import com.nightonke.boommenu.BoomButtons.ButtonPlaceEnum;
+import com.nightonke.boommenu.BoomMenuButton;
+import com.nightonke.boommenu.ButtonEnum;
+import com.nightonke.boommenu.OnBoomListener;
+import com.nightonke.boommenu.Piece.PiecePlaceEnum;
 import com.orhanobut.logger.Logger;
 
 import java.text.SimpleDateFormat;
@@ -61,16 +69,23 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 
-public class MainActivity extends BaseActivity implements  LocationSource, AMapLocationListener ,ActivityCompat.OnRequestPermissionsResultCallback {
+public class MainActivity extends BaseActivity implements LocationSource, AMapLocationListener, ActivityCompat.OnRequestPermissionsResultCallback {
     private static final String TAG = MainActivity.class.getName();
-    @BindView(R.id.mapview) MapView mMapView;
-    @BindView(R.id.search_bar)  MaterialSearchBar mSearchBar;
-    @BindView(R.id.map_mode)   FabSpeedDial mMapMode;
-    @BindView(R.id.fab_location) FloatingActionButton mFabLocation;
-    @BindView(R.id.fab_check) FloatingActionButton mFabCheck;
+    @BindView(R.id.mapview)
+    MapView mMapView;
+    @BindView(R.id.search_bar)
+    MaterialSearchBar mSearchBar;
+    @BindView(R.id.map_mode)
+    FabSpeedDial mMapMode;
+    @BindView(R.id.fab_location)
+    FloatingActionButton mFabLocation;
+    @BindView(R.id.fab_check)
+    FloatingActionButton mFabCheck;
+    @BindView(R.id.bmb)
+    BoomMenuButton mBmb;
     private AMap mAMap;//地图控制类
-    private AMapLocationClient mLocationClient ;//AMapLocationClient类对象
-    private AMapLocationClientOption mLocationOption ;//参数配置对象
+    private AMapLocationClient mLocationClient;//AMapLocationClient类对象
+    private AMapLocationClientOption mLocationOption;//参数配置对象
     private OnLocationChangedListener mLocationChangedListener;//定位回调监听
     private UiSettings mUiSettings;//操作控件类
     private double mLatitude;//纬度
@@ -78,6 +93,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     private Marker mLocationMarker;
     boolean isLocated = false;//首次进来定位用的
     private String mCurrentCityName;//定位当前城市名称
+    private int bmbSubClickedIndex = -1;
 
     /**
      * 需要进行检测的权限数组
@@ -91,6 +107,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     };
     private static final int PERMISSON_REQUESTCODE = 0;
     private boolean isNeedCheck = true;//判断是否需要检测，防止不停的弹框
+
     @Override
     public int setLayoutId() {
         return R.layout.activity_main;
@@ -100,15 +117,21 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     public void init(Bundle savedInstanceStae) {
     }
 
+
     @Override
     public void initView(Bundle savedInstanceState) {
+        for (int i = 0; i < mBmb.getPiecePlaceEnum().pieceNumber(); i++) {
+            mBmb.addBuilder(BmbBuilderManager.getSimpleCircleButtonBuilder());
+        }
+
         mMapView.onCreate(savedInstanceState);//创建地图
-        if (null == mAMap){
+        if (null == mAMap) {
             mAMap = mMapView.getMap();
         }
-        if (null == mUiSettings && null != mAMap){
+        if (null == mUiSettings && null != mAMap) {
             mUiSettings = mAMap.getUiSettings();//获取操作控件类
             mUiSettings.setScaleControlsEnabled(false);//是否显示比例尺控件
+            mUiSettings.setZoomPosition(AMapOptions.ZOOM_POSITION_RIGHT_CENTER);
             mUiSettings.setLogoLeftMargin(getWindowManager().getDefaultDisplay().getWidth());//隐藏高德地图的Logo
         }
         //显示地图
@@ -131,19 +154,19 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
 
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
-                switch (menuItem.getItemId()){
+                switch (menuItem.getItemId()) {
                     case R.id.map_standard:
                         mAMap.setMapType(AMap.MAP_TYPE_NORMAL);
                         break;
-                      case R.id.map_satellite:
-                          mAMap.setMapType(AMap.MAP_TYPE_SATELLITE);
-                          break;
-                      case R.id.map_night:
-                          mAMap.setMapType(AMap.MAP_TYPE_NIGHT);
-                          break;
-                      case R.id.map_navigation:
-                          mAMap.setMapType(AMap.MAP_TYPE_NAVI);
-                          break;
+                    case R.id.map_satellite:
+                        mAMap.setMapType(AMap.MAP_TYPE_SATELLITE);
+                        break;
+                    case R.id.map_night:
+                        mAMap.setMapType(AMap.MAP_TYPE_NIGHT);
+                        break;
+                    case R.id.map_navigation:
+                        mAMap.setMapType(AMap.MAP_TYPE_NAVI);
+                        break;
 
                 }
                 return true;
@@ -155,33 +178,96 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
             }
         });
         mFabLocation.setOnClickListener(v -> {
-            if (0 != mLatitude && 0 != mLongitude){
-                LatLng latLng = new LatLng(mLatitude,mLongitude);
-                if (null == mLocationMarker){
+            if (0 != mLatitude && 0 != mLongitude) {
+                LatLng latLng = new LatLng(mLatitude, mLongitude);
+                if (null == mLocationMarker) {
                     mLocationMarker = mAMap.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.fromResource(R.mipmap.transparent)));
-                }else {
+                } else {
                     mLocationMarker.setPosition(latLng);
                 }
-                mAMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
+                mAMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
             }
         });
         mFabCheck.setOnClickListener(v -> {
             if (null == mAMap) return;
-            if((boolean)SPUtil.get(MyApplication.applicationContext, Constant.TRAFFIC_ENABLE,true)){
+            if ((boolean) SPUtil.get(MyApplication.applicationContext, Constant.TRAFFIC_ENABLE, true)) {
                 mFabCheck.setImageResource(R.mipmap.no_check);
-                SPUtil.put(MyApplication.applicationContext,Constant.TRAFFIC_ENABLE,false);
+                SPUtil.put(MyApplication.applicationContext, Constant.TRAFFIC_ENABLE, false);
                 mAMap.setTrafficEnabled(false);//显示实时路况图层，aMap是地图控制器对象
-                Toast.makeText(MyApplication.applicationContext,"关闭实时路况",Toast.LENGTH_SHORT).show();
-            }else {
+                Toast.makeText(MyApplication.applicationContext, "关闭实时路况", Toast.LENGTH_SHORT).show();
+            } else {
                 mFabCheck.setImageResource(R.mipmap.checking);
-                SPUtil.put(MyApplication.applicationContext,Constant.TRAFFIC_ENABLE,true);
+                SPUtil.put(MyApplication.applicationContext, Constant.TRAFFIC_ENABLE, true);
                 mAMap.setTrafficEnabled(true);//显示实时路况图层，aMap是地图控制器对象
-                Toast.makeText(MyApplication.applicationContext,"开启实时路况",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MyApplication.applicationContext, "开启实时路况", Toast.LENGTH_SHORT).show();
             }
         });
 
         mSearchBar.setOnClickListener(v -> {
-                SearchActivity.newInstance(MainActivity.this,mCurrentCityName);
+            SearchActivity.newInstance(MainActivity.this, mCurrentCityName);
+        });
+
+        mBmb.setOnBoomListener(new OnBoomListener() {
+            @Override
+            public void onClicked(int index, BoomButton boomButton) {
+                Log.e(TAG,"onClicked--index:"+index+"--boomButton:"+boomButton);
+                bmbSubClickedIndex = index;
+            }
+
+            @Override
+            public void onBackgroundClick() {
+                Log.e(TAG,"onBackgroundClick");
+            }
+
+            @Override
+            public void onBoomWillHide() {
+                Log.e(TAG,"onBoomWillHide");
+            }
+
+            @Override
+            public void onBoomDidHide() {
+                Log.e(TAG,"onBoomDidHide");
+                switch (bmbSubClickedIndex){
+                    case 0:
+                        break;
+
+                    case 1://路线搜索
+                        RoutePlanActivity.newInstance(MainActivity.this,null,null,null,mCurrentCityName,"main");
+                        break;
+
+                    case 2:
+                        break;
+
+                    case 3:
+                        break;
+
+                    case 4:
+                        break;
+
+                    case 5:
+                        break;
+
+                    case 6:
+                        break;
+
+                    case 7:
+                        break;
+
+                    case 8:
+                        break;
+
+                }
+            }
+
+            @Override
+            public void onBoomWillShow() {
+                Log.e(TAG,"onBoomWillShow");
+            }
+
+            @Override
+            public void onBoomDidShow() {
+                Log.e(TAG,"onBoomDidShow");
+            }
         });
     }
 
@@ -190,27 +276,14 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
 
     }
 
-    @OnClick({R.id.linear_nearby,R.id.linear_route,R.id.linear_mine})
-    public void onClick(View view){
-            switch (view.getId()){
-                case R.id.linear_nearby:
-                    Toast.makeText(MyApplication.applicationContext,"附近",Toast.LENGTH_SHORT).show();
-                    break;
-                case R.id.linear_route:
-                    RoutePlanActivity.newInstance(MainActivity.this,null,null,null,mCurrentCityName,"main");
-                    break;
-                case R.id.linear_mine:
-                    Toast.makeText(MyApplication.applicationContext,"我的",Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        }
+
 
 
     @Override
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
-        if(isNeedCheck){
+        if (isNeedCheck) {
             checkPermissions(needPermissions);
         }
     }
@@ -243,7 +316,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         if (null != mMapView) {
             mMapView.onDestroy();
         }
-        if(null != mLocationClient){
+        if (null != mLocationClient) {
             mLocationClient.onDestroy();
         }
     }
@@ -251,7 +324,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     @Override//定位回调监听器
     public void onLocationChanged(AMapLocation aMapLocation) {
         if (null == mLocationChangedListener && null == aMapLocation) return;
-        if (0 == aMapLocation.getErrorCode()){//定位成功，成功获取到aMapLocation的信息
+        if (0 == aMapLocation.getErrorCode()) {//定位成功，成功获取到aMapLocation的信息
             mLatitude = aMapLocation.getLatitude();
             mLongitude = aMapLocation.getLongitude();
             mCurrentCityName = aMapLocation.getCity();
@@ -261,9 +334,9 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
                 mAMap.moveCamera(CameraUpdateFactory.zoomBy(3));
                 isLocated = true;
             }
-        }else {//定位失败，
-            String errText = "定位失败," + aMapLocation.getErrorCode()+ ": " + aMapLocation.getErrorInfo();
-            Log.e(TAG,errText);
+        } else {//定位失败，
+            String errText = "定位失败," + aMapLocation.getErrorCode() + ": " + aMapLocation.getErrorInfo();
+            Log.e(TAG, errText);
         }
     }
 
@@ -271,7 +344,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     @Override//设置定位初始化以及启动定位
     public void activate(OnLocationChangedListener onLocationChangedListener) {
         mLocationChangedListener = onLocationChangedListener;
-        if (null == mLocationClient){
+        if (null == mLocationClient) {
             mLocationClient = new AMapLocationClient(getApplicationContext());
             mLocationOption = new AMapLocationClientOption();
             mLocationClient.setLocationListener(this);
@@ -283,7 +356,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
     @Override//停止定位的相关回调
     public void deactivate() {
         mLocationChangedListener = null;
-        if (null != mLocationClient){
+        if (null != mLocationClient) {
             mLocationClient.stopLocation();
             mLocationClient.onDestroy();
             mLocationClient = null;
@@ -293,6 +366,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
 
     /**
      * 定位成功，解析AMapLocation对象
+     *
      * @param aMapLocation
      */
     private void parseAMapLocation(AMapLocation aMapLocation) {
@@ -300,24 +374,24 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         Date date = new Date(aMapLocation.getTime());
         df.format(date);
 
-        Log.e(TAG,"当前定位结果来源："+aMapLocation.getLocationType()
-        +"\n纬度：" + aMapLocation.getLatitude()
-        +"\n经度：" + aMapLocation.getLongitude()
-        +"\n精度信息：" + aMapLocation.getAccuracy()
-        +"\n地址：" + aMapLocation.getAddress()
-        +"\n国家信息："+ aMapLocation.getCountry()
-        +"\n省信息：" + aMapLocation.getProvince()
-        +"\n城市信息：" + aMapLocation.getCity()
-        +"\n城区信息：" + aMapLocation.getDistrict()
-        +"\n街道信息：" + aMapLocation.getStreet()
-        +"\n街道门牌号信息：" + aMapLocation.getStreetNum()
-        +"\n城市编码：" + aMapLocation.getCityCode()
-        +"\n地区编码：" + aMapLocation.getAdCode()
-        +"\n当前定位点的AOI信息：" + aMapLocation.getAoiName()
-        +"\n当前室内定位的建筑物Id：" + aMapLocation.getBuildingId()
-        +"\n当前室内定位的楼层：" + aMapLocation.getFloor()
-        +"\nGPS的当前状态：" + aMapLocation.getGpsAccuracyStatus()
-        +"\n定位时间：" +  df.toString()
+        Log.e(TAG, "当前定位结果来源：" + aMapLocation.getLocationType()
+                + "\n纬度：" + aMapLocation.getLatitude()
+                + "\n经度：" + aMapLocation.getLongitude()
+                + "\n精度信息：" + aMapLocation.getAccuracy()
+                + "\n地址：" + aMapLocation.getAddress()
+                + "\n国家信息：" + aMapLocation.getCountry()
+                + "\n省信息：" + aMapLocation.getProvince()
+                + "\n城市信息：" + aMapLocation.getCity()
+                + "\n城区信息：" + aMapLocation.getDistrict()
+                + "\n街道信息：" + aMapLocation.getStreet()
+                + "\n街道门牌号信息：" + aMapLocation.getStreetNum()
+                + "\n城市编码：" + aMapLocation.getCityCode()
+                + "\n地区编码：" + aMapLocation.getAdCode()
+                + "\n当前定位点的AOI信息：" + aMapLocation.getAoiName()
+                + "\n当前室内定位的建筑物Id：" + aMapLocation.getBuildingId()
+                + "\n当前室内定位的楼层：" + aMapLocation.getFloor()
+                + "\nGPS的当前状态：" + aMapLocation.getGpsAccuracyStatus()
+                + "\n定位时间：" + df.toString()
         );
     }
 
@@ -325,7 +399,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
      * 初始化定位参数
      */
     private void initLocationOptions() {
-        if (null != mLocationOption){
+        if (null != mLocationOption) {
             mLocationOption.setLocationMode(AMapLocationMode.Hight_Accuracy);//同时使用网络定位和GPS定位,优先返回定位结果、地址描述信息
             mLocationOption.setOnceLocationLatest(true);//获取最近三秒内精度最高的一次定位结果
             mLocationOption.setInterval(2000);//默认是连续定位模式，
@@ -338,6 +412,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
 
     /**
      * 检测权限
+     *
      * @param permissions
      */
     private void checkPermissions(String... permissions) {
@@ -357,7 +432,6 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
      * @param permissions
      * @return
      * @since 2.5.0
-     *
      */
     private List<String> findDeniedPermissions(String[] permissions) {
         List<String> needRequestPermissonList = new ArrayList<String>();
@@ -374,10 +448,10 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
 
     /**
      * 检测是否说有的权限都已经授权
+     *
      * @param grantResults
      * @return
      * @since 2.5.0
-     *
      */
     private boolean verifyPermissions(int[] grantResults) {
         for (int result : grantResults) {
@@ -392,7 +466,6 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
      * 显示提示信息
      *
      * @since 2.5.0
-     *
      */
     private void showMissingPermissionDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -431,14 +504,13 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
         myLocationStyle.strokeWidth(5f);//自定义圆形边框的宽度
         myLocationStyle.radiusFillColor(Color.argb(10, 0, 0, 180));//设置圆形的填充颜色
         mAMap.setMyLocationStyle(myLocationStyle);//将自定义的样式显示在地图上
-        Log.e(TAG,"设置自定义样式");
+        Log.e(TAG, "设置自定义样式");
     }
 
     /**
-     *  启动应用的设置
+     * 启动应用的设置
      *
      * @since 2.5.0
-     *
      */
     private void startAppSettings() {
         Intent intent = new Intent(
@@ -449,7 +521,7 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK){
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             this.finish();
             return true;
         }
@@ -461,10 +533,10 @@ public class MainActivity extends BaseActivity implements  LocationSource, AMapL
      */
     private void initTrafficEnable() {
         if (null == mAMap) return;
-        if((boolean)SPUtil.get(MyApplication.applicationContext, Constant.TRAFFIC_ENABLE,true)){
+        if ((boolean) SPUtil.get(MyApplication.applicationContext, Constant.TRAFFIC_ENABLE, true)) {
             mFabCheck.setImageResource(R.mipmap.checking);
             mAMap.setTrafficEnabled(true);//显示实时路况图层，aMap是地图控制器对象
-        }else {
+        } else {
             mFabCheck.setImageResource(R.mipmap.no_check);
             mAMap.setTrafficEnabled(false);//显示实时路况图层，aMap是地图控制器对象
         }

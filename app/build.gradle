@@ -67,4 +67,6 @@ dependencies {
     compile 'com.orhanobut:logger:1.15'
     /*组件通信*/
     compile 'org.greenrobot:eventbus:3.0.0'
+    /*菜单*/
+    compile project(':boommenu')
 }
