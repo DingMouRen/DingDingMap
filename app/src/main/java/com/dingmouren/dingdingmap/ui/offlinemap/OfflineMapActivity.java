@@ -38,11 +38,15 @@ import butterknife.BindView;
  */
 
 public class OfflineMapActivity extends BaseActivity implements OfflineMapManager.OfflineMapDownloadListener
-            ,View.OnClickListener,OfflineMapManager.OfflineLoadedListener{
-    @BindView(R.id.img_back) ImageView mImageBack;
-    @BindView(R.id.download_list_text)  TextView mDownloadText;
-    @BindView(R.id.downloaded_list_text) TextView mDownloadedText;
-    @BindView(R.id.content_viewpage)  ViewPager mContentViewPage;
+        , View.OnClickListener, OfflineMapManager.OfflineLoadedListener {
+    @BindView(R.id.img_back)
+    ImageView mImageBack;
+    @BindView(R.id.download_list_text)
+    TextView mDownloadText;
+    @BindView(R.id.downloaded_list_text)
+    TextView mDownloadedText;
+    @BindView(R.id.content_viewpage)
+    ViewPager mContentViewPage;
 
     private ExpandableListView mAllOfflineMapList;
     private ListView mDownLoadedList;
@@ -58,10 +62,8 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
     private List<OfflineMapProvince> provinceList = new ArrayList<OfflineMapProvince>();// 保存一级目录的省直辖市
 
     private Handler handler = new Handler() {
-
         @Override
         public void handleMessage(Message msg) {
-            // TODO Auto-generated method stub
             super.handleMessage(msg);
             switch (msg.what) {
                 case UPDATE_LIST:
@@ -70,12 +72,10 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
                     } else {
                         mDownloadedAdapter.notifyDataChange();
                     }
-
                     break;
                 case SHOW_MSG:
-                    Toast.makeText(MyApplication.applicationContext,(String) msg.obj,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MyApplication.applicationContext, (String) msg.obj, Toast.LENGTH_SHORT).show();
                     break;
-
                 case DISMISS_INIT_DIALOG:
                     initDialog.dismiss();
                     handler.sendEmptyMessage(UPDATE_LIST);
@@ -84,9 +84,7 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
                     if (initDialog != null) {
                         initDialog.show();
                     }
-
                     break;
-
                 default:
                     break;
             }
@@ -121,34 +119,29 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
             public void onPageSelected(int position) {
                 int paddingHorizontal = mDownloadedText.getPaddingLeft();
                 int paddingVertical = mDownloadedText.getPaddingTop();
-
                 switch (position) {
                     case 0:
-                        mDownloadText .setBackgroundResource(R.drawable.offlinearrow_tab1_pressed);
-                        mDownloadedText .setBackgroundResource(R.drawable.offlinearrow_tab2_normal);
+                        mDownloadText.setBackgroundResource(R.drawable.offlinearrow_tab1_pressed);
+                        mDownloadedText.setBackgroundResource(R.drawable.offlinearrow_tab2_normal);
                         break;
                     case 1:
-                        mDownloadText .setBackgroundResource(R.drawable.offlinearrow_tab1_normal);
+                        mDownloadText.setBackgroundResource(R.drawable.offlinearrow_tab1_normal);
 
-                        mDownloadedText .setBackgroundResource(R.drawable.offlinearrow_tab2_pressed);
+                        mDownloadedText.setBackgroundResource(R.drawable.offlinearrow_tab2_pressed);
                         break;
                 }
                 handler.sendEmptyMessage(UPDATE_LIST);
                 mDownloadedText.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
                 mDownloadText.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
-
             }
-
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
         });
     }
 
     @Override
     public void initData() {
-
     }
 
     @Override
@@ -178,13 +171,13 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
             case OfflineMapStatus.SUCCESS:
                 break;
             case OfflineMapStatus.LOADING:
-                Log.d("amap-download", "download: " + completeCode + "%" + ","+ downName);
+                Log.d("amap-download", "download: " + completeCode + "%" + "," + downName);
                 break;
             case OfflineMapStatus.UNZIP:
                 Log.d("amap-unzip", "unzip: " + completeCode + "%" + "," + downName);
                 break;
             case OfflineMapStatus.WAITING:
-                Log.d("amap-waiting", "WAITING: " + completeCode + "%" + ","  + downName);
+                Log.d("amap-waiting", "WAITING: " + completeCode + "%" + "," + downName);
                 break;
             case OfflineMapStatus.PAUSE:
                 Log.d("amap-pause", "pause: " + completeCode + "%" + "," + downName);
@@ -199,11 +192,11 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
                 break;
             case OfflineMapStatus.EXCEPTION_NETWORK_LOADING:
                 Log.e("amap-download", "download: " + " EXCEPTION_NETWORK_LOADING " + downName);
-                Toast.makeText(OfflineMapActivity.this, "网络异常", Toast.LENGTH_SHORT)  .show();
+                Toast.makeText(OfflineMapActivity.this, "网络异常", Toast.LENGTH_SHORT).show();
                 amapManager.pause();
                 break;
             case OfflineMapStatus.EXCEPTION_SDCARD:
-                Log.e("amap-download", "download: " + " EXCEPTION_SDCARD "  + downName);
+                Log.e("amap-download", "download: " + " EXCEPTION_SDCARD " + downName);
                 break;
             default:
                 break;
@@ -223,7 +216,7 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
 
     @Override//OfflineMapManager
     public void onRemove(boolean success, String name, String describe) {
-        Log.i("amap-demo", "onRemove " + name + " : " + success + " , "   + describe);
+        Log.i("amap-demo", "onRemove " + name + " : " + success + " , " + describe);
         handler.sendEmptyMessage(UPDATE_LIST);
         Message message = new Message();
         message.what = SHOW_MSG;
@@ -233,7 +226,7 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
 
     @Override//OnClickListener
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.download_list_text:
                 int paddingHorizontal = mDownloadText.getPaddingLeft();
                 int paddingVertical = mDownloadText.getPaddingTop();
@@ -243,9 +236,9 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
 
                 mDownloadedText.setBackgroundResource(R.drawable.offlinearrow_tab2_normal);
 
-                mDownloadedText.setPadding(paddingHorizontal, paddingVertical,paddingHorizontal, paddingVertical);
+                mDownloadedText.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
 
-                mDownloadText.setPadding(paddingHorizontal, paddingVertical,paddingHorizontal, paddingVertical);
+                mDownloadText.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
 
                 mDownloadedAdapter.notifyDataChange();
                 break;
@@ -256,18 +249,16 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
 
                 mDownloadText.setBackgroundResource(R.drawable.offlinearrow_tab1_normal);
                 mDownloadedText.setBackgroundResource(R.drawable.offlinearrow_tab2_pressed);
-                mDownloadedText.setPadding(paddingHorizontal1, paddingVertical1,paddingHorizontal1, paddingVertical1);
-                mDownloadText.setPadding(paddingHorizontal1, paddingVertical1,paddingHorizontal1, paddingVertical1);
+                mDownloadedText.setPadding(paddingHorizontal1, paddingVertical1, paddingHorizontal1, paddingVertical1);
+                mDownloadText.setPadding(paddingHorizontal1, paddingVertical1, paddingHorizontal1, paddingVertical1);
 
                 mDownloadedAdapter.notifyDataChange();
                 break;
-            case  R.id.img_back:
+            case R.id.img_back:
                 finish();
                 break;
         }
     }
-
-
 
 
     /**
@@ -374,6 +365,7 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
         gaogao.setCityList(gangaoList);
         provinceList.set(2, gaogao);
     }
+
     /**
      * 初始化已下载列表
      */
