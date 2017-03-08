@@ -45,6 +45,7 @@ import com.dingmouren.dingdingmap.Constant;
 import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.base.BaseActivity;
+import com.dingmouren.dingdingmap.ui.offlinemap.OfflineMapActivity;
 import com.dingmouren.dingdingmap.ui.route_plan.RoutePlanActivity;
 import com.dingmouren.dingdingmap.ui.search.SearchActivity;
 import com.dingmouren.dingdingmap.util.BmbBuilderManager;
@@ -233,6 +234,7 @@ public class MainActivity extends BaseActivity implements LocationSource, AMapLo
 
                     case 1://路线搜索
                         RoutePlanActivity.newInstance(MainActivity.this,null,null,null,mCurrentCityName,"main");
+                        bmbSubClickedIndex = -1;
                         break;
 
                     case 2:
@@ -242,6 +244,8 @@ public class MainActivity extends BaseActivity implements LocationSource, AMapLo
                         break;
 
                     case 4:
+                        startActivity(new Intent(MainActivity.this, OfflineMapActivity.class));
+                        bmbSubClickedIndex = -1;
                         break;
 
                     case 5:

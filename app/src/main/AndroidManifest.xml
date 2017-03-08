@@ -76,6 +76,8 @@
             android:launchMode="singleTask"/>
         <activity android:name=".ui.search.RoutePlanSearchActivity"
             android:launchMode="singleTask"/>
+        <activity android:name=".ui.offlinemap.OfflineMapActivity"
+            android:launchMode="singleTask"/>
 
         <service android:name="com.amap.api.location.APSService"/>
     </application>
