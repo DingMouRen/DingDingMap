@@ -1,5 +1,6 @@
 package com.dingmouren.dingdingmap.ui.adapter;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,13 +52,13 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder{
-        LinearLayout root;
+        CardView root;
         TextView tvName,tvAddress;
         public ViewHolder(View itemView) {
             super(itemView);
             tvName = (TextView) itemView.findViewById(R.id.tv_name);
             tvAddress = (TextView) itemView.findViewById(R.id.tv_address);
-            root = (LinearLayout) itemView.findViewById(R.id.root);
+            root = (CardView) itemView.findViewById(R.id.root);
         }
         private void bindData(PoiItem poiItem){
             if (null != poiItem){

@@ -38,10 +38,10 @@ public class BusRouteDetailActivity extends BaseActivity implements AMap.OnMapLo
                 ,AMap.InfoWindowAdapter,AMap.OnInfoWindowClickListener,AMap.OnMarkerClickListener{
     private static final String TAG = BusRouteDetailActivity.class.getName();
     @BindView(R.id.toolbar)  Toolbar mToolbar;
-    @BindView(R.id.firstline) TextView mFirstLine;
     @BindView(R.id.listview) ListView mListView;
     @BindView(R.id.mapview)   MapView mMapView;
     @BindView(R.id.tv_logo) TextView mTvLogo;
+    @BindView(R.id.tv_route_info) TextView mTvRouteInfo;
     private BusPath mBuspath;
     private BusRouteResult mBusRouteResult;
     private AMap mMap;
@@ -73,7 +73,6 @@ public class BusRouteDetailActivity extends BaseActivity implements AMap.OnMapLo
 
     @Override
     public void initView(Bundle savedInstanceState) {
-        mToolbar.setTitle("公交路线详情");
         setSupportActionBar(mToolbar);
 
         mMapView.onCreate(savedInstanceState);
@@ -84,7 +83,11 @@ public class BusRouteDetailActivity extends BaseActivity implements AMap.OnMapLo
         }
         duration = AMapUtil.getFriendlyTime((int)mBuspath.getDuration());
         distinct = AMapUtil.getFriendlyLength((int)mBuspath.getDistance());
-        mFirstLine.setText(duration+"("+distinct+")");
+        if (null != duration && null != distinct) {
+            mTvRouteInfo.setText("坐公交耗时" + duration + ",路程" + distinct);
+        }else {
+            mTvRouteInfo.setText("公交路线详情");
+        }
 
 
         mBusSegmentListAdapter = new BusSegmentListAdapter(MyApplication.applicationContext,mBuspath.getSteps());
@@ -104,7 +107,6 @@ public class BusRouteDetailActivity extends BaseActivity implements AMap.OnMapLo
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.mapview && !isClicked){
                     mListView.setVisibility(View.GONE);
-                    mFirstLine.setVisibility(View.GONE);
                     mMapView.setVisibility(View.VISIBLE);
                     mTvLogo.setVisibility(View.VISIBLE);
                     mMap.clear();

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,6 +23,7 @@ import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.ui.adapter.SearchResultAdapter;
 import com.dingmouren.dingdingmap.ui.search_result.SearchResultActivity;
+import com.dingmouren.dingdingmap.widgets.CustomRecyclerView;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.orhanobut.logger.Logger;
 
@@ -36,7 +38,7 @@ import butterknife.ButterKnife;
 public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiSearchListener{
     private static final String TAG = SearchActivity.class.getName();
     @BindView(R.id.search_bar)  MaterialSearchBar mSearchBar;
-    @BindView(R.id.recycler)  RecyclerView mRecycler;
+    @BindView(R.id.recycler)  CustomRecyclerView mRecycler;
     @BindView(R.id.progressbar) ProgressBar mProgressBar;
     private SearchResultAdapter mSearchResultAdapter;
     private PoiSearch mPoiSearch;//POI搜索
@@ -67,6 +69,7 @@ public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiS
         if (null == mSearchResultAdapter) mSearchResultAdapter = new SearchResultAdapter();
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setHasFixedSize(true);
+        mRecycler.setItemAnimator(new DefaultItemAnimator());
         mRecycler.setAdapter(mSearchResultAdapter);
     }
 
@@ -113,6 +116,7 @@ public class SearchActivity extends FragmentActivity implements PoiSearch.OnPoiS
                 List<PoiItem> poiItems = poiResult.getPois();
                 mSearchResultAdapter.setList(poiItems);
                 mSearchResultAdapter.notifyDataSetChanged();
+                mRecycler.scheduleLayoutAnimation();//执行Item进入动画
                 mProgressBar.setVisibility(View.INVISIBLE);
             }else {
                 mProgressBar.setVisibility(View.INVISIBLE);

@@ -14,11 +14,12 @@
             app:hint="查找地点、公交、地铁" />
 
 
-    <android.support.v7.widget.RecyclerView
+    <com.dingmouren.dingdingmap.widgets.CustomRecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/search_bar"
+        android:layoutAnimation="@anim/recycler_b2t_animation"
         />
     <ProgressBar
         android:id="@+id/progressbar"

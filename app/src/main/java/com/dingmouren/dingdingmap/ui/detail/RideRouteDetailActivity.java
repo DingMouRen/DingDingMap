@@ -25,10 +25,8 @@ import butterknife.BindView;
 public class RideRouteDetailActivity extends BaseActivity {
 
     @BindView(R.id.toolbar)  Toolbar mToolbar;
-    @BindView(R.id.linear_info)  LinearLayout mLinerInfo;
-    @BindView(R.id.firstline)  TextView mFirstLine;
-    @BindView(R.id.secondline) TextView mSecondLine;
     @BindView(R.id.listview) ListView mListView;
+    @BindView(R.id.tv_route_info) TextView mTvRouteInfo;
     private RidePath mRidePath;
     private RideSegmentListAdapter mRideSegmentListAdapter;
 
@@ -51,11 +49,14 @@ public class RideRouteDetailActivity extends BaseActivity {
 
     @Override
     public void initView(Bundle savedInstanceState) {
-        mToolbar.setTitle("骑行路线详情");
         setSupportActionBar(mToolbar);
         String dur = AMapUtil.getFriendlyTime((int) mRidePath.getDuration());
         String dis = AMapUtil .getFriendlyLength((int) mRidePath.getDistance());
-        mFirstLine.setText(dur + "(" + dis + ")");
+        if (null != dur && null != dis) {
+            mTvRouteInfo.setText("骑行耗时" + dur + ",路程" + dis);
+        }else {
+            mTvRouteInfo.setText("骑行路线详情");
+        }
         mRideSegmentListAdapter = new RideSegmentListAdapter(
                 this.getApplicationContext(), mRidePath.getSteps());
         mListView.setAdapter(mRideSegmentListAdapter);

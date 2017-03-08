@@ -9,29 +9,37 @@
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:fitsSystemWindows="true"
-        app:navigationIcon="@mipmap/back_arrow_blue"
-        app:titleTextColor="@color/main_color"
-        android:elevation="@dimen/activity_horizontal_margin"
+        app:navigationIcon="@mipmap/back_arrow"
+        android:background="@color/main_color"
+        android:elevation="@dimen/elevation_detail"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         >
-    </android.support.v7.widget.Toolbar>
         <TextView
-            android:id="@+id/firstline"
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_route_info"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:ellipsize="marquee"
+            android:fadingEdge="horizontal"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:singleLine="true"
-            android:textColor="#333333"
-            android:layout_below="@+id/toolbar"
-            android:elevation="@dimen/activity_horizontal_margin"
-            android:textSize="16sp" />
+            />
+    </android.support.v7.widget.Toolbar>
+
 
     <ListView
         android:id="@+id/listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/firstline"
+        android:layout_below="@+id/toolbar"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         />
     <com.amap.api.maps.MapView
         android:id="@+id/mapview"

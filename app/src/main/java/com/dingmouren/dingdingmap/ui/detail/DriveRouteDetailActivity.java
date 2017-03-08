@@ -31,10 +31,8 @@ import butterknife.BindView;
 public class DriveRouteDetailActivity extends BaseActivity {
     private static final String TAG = DriveRouteDetailActivity.class.getName();
     @BindView(R.id.toolbar)  Toolbar mToolbar;
-    @BindView(R.id.linear_drive_info)  LinearLayout mLinearInfo;
-    @BindView(R.id.firstline)  TextView mFirstLine;
-    @BindView(R.id.secondline) TextView mSecondLine;
     @BindView(R.id.listview)  ListView mListView;
+    @BindView(R.id.tv_route_info) TextView mTvRouteInfo;
 
     private DrivePath mDrivePath;
     private DriveRouteResult mDriveRouteResult;
@@ -62,16 +60,15 @@ public class DriveRouteDetailActivity extends BaseActivity {
 
     @Override
     public void initView(Bundle savedInstanceState) {
-        mToolbar.setTitle("驾车路线详情");
         setSupportActionBar(mToolbar);
         String dur = AMapUtil.getFriendlyTime((int) mDrivePath.getDuration());
         String dis = AMapUtil.getFriendlyLength((int) mDrivePath
                 .getDistance());
-        mFirstLine.setText(dur + "(" + dis + ")");
         int taxiCost = (int) mDriveRouteResult.getTaxiCost();
-        if (0 != taxiCost) {
-            mSecondLine.setText("打车约" + taxiCost + "元");
-            mSecondLine.setVisibility(View.VISIBLE);
+        if (null != dur && null != dis) {
+            mTvRouteInfo.setText("驾车耗时" + dur + ",路程" + dis+",打车约"+taxiCost+"元");
+        }else {
+            mTvRouteInfo.setText("驾车路线详情");
         }
     }
 

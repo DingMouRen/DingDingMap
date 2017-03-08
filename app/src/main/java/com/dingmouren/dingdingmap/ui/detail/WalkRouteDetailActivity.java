@@ -26,9 +26,8 @@ import butterknife.BindView;
 
 public class WalkRouteDetailActivity extends BaseActivity {
     @BindView(R.id.toolbar) Toolbar mToolbar;
-    @BindView(R.id.firstline)  TextView mFirstLine;
-    @BindView(R.id.linear_info) LinearLayout mLinearInfo;
     @BindView(R.id.listview) ListView mListView;
+    @BindView(R.id.tv_route_info) TextView mTvRouteInfo;
     private WalkSegmentListAdapter mWalkSegmentListAdapter;
     private WalkPath mWalkPath;
 
@@ -52,11 +51,14 @@ public class WalkRouteDetailActivity extends BaseActivity {
 
     @Override
     public void initView(Bundle savedInstanceState) {
-        mToolbar.setTitle("步行路线详情");
         setSupportActionBar(mToolbar);
         String dur = AMapUtil.getFriendlyTime((int) mWalkPath.getDuration());
         String dis = AMapUtil .getFriendlyLength((int) mWalkPath.getDistance());
-        mFirstLine.setText(dur + "(" + dis + ")");
+        if (null != dur && null != dis) {
+            mTvRouteInfo.setText("步行耗时" + dur + ",路程" + dis);
+        }else {
+            mTvRouteInfo.setText("步行路线详情");
+        }
         mWalkSegmentListAdapter = new WalkSegmentListAdapter(
                 this.getApplicationContext(), mWalkPath.getSteps());
         mListView.setAdapter(mWalkSegmentListAdapter);
