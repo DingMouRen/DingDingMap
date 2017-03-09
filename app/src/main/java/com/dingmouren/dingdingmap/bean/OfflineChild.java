@@ -201,7 +201,7 @@ public class OfflineChild implements OnClickListener, OnLongClickListener {
 		mDownloadProgress.setVisibility(View.VISIBLE);
 		mDownloadImage.setVisibility(View.VISIBLE);
 		mDownloadImage.setImageResource(R.drawable.offlinearrow_start);
-		mDownloadProgress.setTextColor(Color.GREEN);
+		mDownloadProgress.setTextColor(Color.parseColor("#05C1F1"));
 		mDownloadProgress.setText("等待中");
 	}
 	
@@ -212,7 +212,7 @@ public class OfflineChild implements OnClickListener, OnLongClickListener {
 		mDownloadProgress.setVisibility(View.VISIBLE);
 		mDownloadImage.setVisibility(View.VISIBLE);
 		mDownloadImage.setImageResource(R.drawable.offlinearrow_start);
-		mDownloadProgress.setTextColor(Color.RED);
+		mDownloadProgress.setTextColor(Color.parseColor("#05C1F1"));
 		mDownloadProgress.setText("下载出现异常");
 	}
 
@@ -229,7 +229,7 @@ public class OfflineChild implements OnClickListener, OnLongClickListener {
 		mDownloadProgress.setVisibility(View.VISIBLE);
 		mDownloadImage.setVisibility(View.VISIBLE);
 		mDownloadImage.setImageResource(R.drawable.offlinearrow_start);
-		mDownloadProgress.setTextColor(Color.RED);
+		mDownloadProgress.setTextColor(Color.parseColor("#05C1F1"));
 		mDownloadProgress.setText("暂停中:" + completeCode + "%");
 
 	}
@@ -271,7 +271,7 @@ public class OfflineChild implements OnClickListener, OnLongClickListener {
 		mDownloadProgress.setText(mMapCity.getcompleteCode() + "%");
 		mDownloadImage.setVisibility(View.VISIBLE);
 		mDownloadImage.setImageResource(R.drawable.offlinearrow_stop);
-		mDownloadProgress.setTextColor(Color.BLUE);
+		mDownloadProgress.setTextColor(Color.parseColor("#05C1F1"));
 	}
 
 	private synchronized void pauseDownload() {
