@@ -17,10 +17,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.amap.api.maps.AMapException;
 import com.amap.api.maps.offlinemap.OfflineMapCity;
 import com.amap.api.maps.offlinemap.OfflineMapManager;
 import com.amap.api.maps.offlinemap.OfflineMapStatus;
+import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 
 public class OfflineChild implements OnClickListener, OnLongClickListener {
@@ -38,7 +40,6 @@ public class OfflineChild implements OnClickListener, OnLongClickListener {
 
 	private OfflineMapCity mMapCity;// 离线下载城市
 
-	Dialog dialog;// 长按弹出的对话框
 
 	private boolean mIsDownloading = false;
 
@@ -302,41 +303,7 @@ public class OfflineChild implements OnClickListener, OnLongClickListener {
 
 	public void onClick(View view) {
 		
-//		if(mMapCity.getCity() .equals( "北京")) {
-//			new Thread(new Runnable() {
-//				
-//				@Override
-//				public void run() {
-//					// TODO Auto-generated method stub
-//					for(int i =0; i< 100;i++) {
-//						try {
-//							amapManager.downloadByCityName("北京");
-//							TimeUnit.MILLISECONDS.sleep(500);
-//							amapManager.downloadByCityName("上海");
-//							TimeUnit.MILLISECONDS.sleep(500);
-//						} catch (AMapException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						} catch (InterruptedException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-//					}
-//				
-//				}
-//			}).start();
-//			return;
-//		}
-		
-//		// 避免频繁点击事件，避免不断从夫开始下载和暂停下载
-//		mOffLineChildView.setEnabled(false);
-//		new Handler().postDelayed(new Runnable() {
-//			
-//			@Override
-//			public void run() {
-//				mOffLineChildView.setEnabled(true);
-//			}
-//		},100);// 这个时间段刚刚好
+
 
 		int completeCode = -1, status = -1;
 		if (mMapCity != null) {
@@ -364,11 +331,6 @@ public class OfflineChild implements OnClickListener, OnLongClickListener {
 					displayWaitingStatus(completeCode);
 				else 
 					displayExceptionStatus();
-//					Toast.makeText(mContext, "SD卡空间不多了", 1000).show();
-				// 在暂停中点击，表示要开始下载
-				// 在默认状态点击，表示开始下载
-				// 在等待中点击，表示要开始下载
-				// 要开始下载状态改为等待中，再回调中会自己修改
 				break;
 			}
 			
@@ -383,53 +345,11 @@ public class OfflineChild implements OnClickListener, OnLongClickListener {
 	 * 加入synchronized 避免在dialog还没有关闭的时候再次，请求弹出的bug
 	 */
 	public synchronized void showDeleteDialog(final String name) {
-		AlertDialog.Builder builder = new Builder(mContext);
-
-		builder.setTitle(name);
-		builder.setSingleChoiceItems(new String[] { "删除" }, -1,
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface arg0, int arg1) {
-						dialog.dismiss();
-						if (amapManager == null) {
-							return;
-						}
-						switch (arg1) {
-						case 0:
-							amapManager.remove(name);
-							break;
-
-						default:
-							break;
-						}
-
-						// amapManager.log();
-
-					}
-				});
-		builder.setNegativeButton("取消", null);
-		dialog = builder.create();
-		dialog.show();
-	}
-
-	/**
-	 * 长按弹出提示框 删除和更新
-	 */
-	public void showDeleteUpdateDialog(final String name) {
-		AlertDialog.Builder builder = new Builder(mContext);
-
-		builder.setTitle(name);
-		builder.setSingleChoiceItems(new String[] { "删除", "检查更新" }, -1,
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface arg0, int arg1) {
-						dialog.dismiss();
-						if (amapManager == null) {
-							return;
-						}
-						switch (arg1) {
+		new MaterialDialog.Builder(mContext)
+				.title(name)
+				.items(R.array.offline_map_del_or_update)
+				.itemsCallbackSingleChoice(1,(dialog1, itemView, which, text) -> {
+					switch (which){
 						case 0:
 							amapManager.remove(name);
 							break;
@@ -437,27 +357,51 @@ public class OfflineChild implements OnClickListener, OnLongClickListener {
 							try {
 								amapManager.updateOfflineCityByName(name);
 							} catch (AMapException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 							break;
-						default:
-							break;
-						}
-
 					}
-				});
-		builder.setNegativeButton("取消", null);
-		dialog = builder.create();
-		dialog.show();
+					return true;
+				})
+				.positiveText("确定")
+				.negativeText("取消")
+				.onPositive((dialog1, which) -> {
+				})
+				.onNegative((dialog1, which) -> dialog1.dismiss())
+				.show();
+	}
+
+	/**
+	 * 长按弹出提示框 删除和更新
+	 */
+	public void showDeleteUpdateDialog(final String name) {
+			new MaterialDialog.Builder(mContext)
+                    .title(name)
+                    .items(R.array.offline_map_del_or_update)
+                    .itemsCallbackSingleChoice(1,(dialog1, itemView, which, text) -> {
+						switch (which){
+							case 0:
+								amapManager.remove(name);
+								break;
+							case 1:
+								try {
+									amapManager.updateOfflineCityByName(name);
+								} catch (AMapException e) {
+									e.printStackTrace();
+								}
+								break;
+						}
+						return true;
+					})
+					.positiveText("确定")
+					.negativeText("取消")
+					.onPositive((dialog1, which) -> {
+					})
+					.onNegative((dialog1, which) -> dialog1.dismiss())
+					.show();
 	}
 
 	public boolean onLongClick(View arg0) {
-		
-//		if (mMapCity.getState() == OfflineMapStatus.LOADING) {
-//			amapManager.restart();
-//			return false;
-//		} 
 		
 		Log.d("amap-longclick",
 				mMapCity.getCity() + " : " + mMapCity.getState());

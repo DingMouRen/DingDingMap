@@ -69,4 +69,7 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     /*菜单*/
     compile project(':boommenu')
+    /*对话框*/
+    compile 'com.afollestad.material-dialogs:core:0.9.4.1'
+    compile 'com.afollestad.material-dialogs:commons:0.9.4.1'
 }

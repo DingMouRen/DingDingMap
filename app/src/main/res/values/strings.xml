@@ -4,4 +4,8 @@
     <string name="notifyMsg">当前应用缺少必要的权限。请点击“设置”-“权限”-打开所需的权限。</string>
     <string name="cancel">取消</string>
     <string name="setting">设置</string>
+    <string-array name="offline_map_del_or_update">
+        <item>删除</item>
+        <item>检查更新</item>
+    </string-array>
 </resources>

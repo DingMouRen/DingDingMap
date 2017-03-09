@@ -1,6 +1,7 @@
 package com.dingmouren.dingdingmap.ui.offlinemap;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -121,13 +122,16 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
                 int paddingVertical = mDownloadedText.getPaddingTop();
                 switch (position) {
                     case 0:
-                        mDownloadText.setBackgroundResource(R.drawable.offlinearrow_tab1_pressed);
-                        mDownloadedText.setBackgroundResource(R.drawable.offlinearrow_tab2_normal);
+                        mDownloadText.setBackground(getResources().getDrawable(R.drawable.offline_left_checked));
+                        mDownloadText.setTextColor(Color.WHITE);
+                        mDownloadedText.setBackground(getResources().getDrawable(R.drawable.offline_right_normal));
+                        mDownloadText.setTextColor(Color.GRAY);
                         break;
                     case 1:
-                        mDownloadText.setBackgroundResource(R.drawable.offlinearrow_tab1_normal);
-
-                        mDownloadedText.setBackgroundResource(R.drawable.offlinearrow_tab2_pressed);
+                        mDownloadText.setBackground(getResources().getDrawable(R.drawable.offline_left_normal));
+                        mDownloadText.setTextColor(Color.GRAY);
+                        mDownloadedText.setBackground(getResources().getDrawable(R.drawable.offline_right_checked));
+                        mDownloadedText.setTextColor(Color.WHITE);
                         break;
                 }
                 handler.sendEmptyMessage(UPDATE_LIST);
@@ -210,17 +214,17 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
         Log.i("amap-demo", "onCheckUpdate " + name + " : " + hasNew);
         Message message = new Message();
         message.what = SHOW_MSG;
-        message.obj = "CheckUpdate " + name + " : " + hasNew;
+        message.obj = name + " 地图数据: " + (hasNew == true ? "有更新":"已经是最新");
         handler.sendMessage(message);
     }
 
     @Override//OfflineMapManager
     public void onRemove(boolean success, String name, String describe) {
-        Log.i("amap-demo", "onRemove " + name + " : " + success + " , " + describe);
+        Log.i("amap-demo", "删除 " + name + " 离线地图: " + (success == true ? "成功":"失败"));
         handler.sendEmptyMessage(UPDATE_LIST);
         Message message = new Message();
         message.what = SHOW_MSG;
-        message.obj = "onRemove " + name + " : " + success + " , " + describe;
+        message.obj = "删除 " + name + " 离线地图: " + (success == true ? "成功":"失败");
         handler.sendMessage(message);
     }
 
@@ -232,10 +236,10 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
                 int paddingVertical = mDownloadText.getPaddingTop();
                 mContentViewPage.setCurrentItem(0);
 
-                mDownloadText.setBackgroundResource(R.drawable.offlinearrow_tab1_pressed);
-
-                mDownloadedText.setBackgroundResource(R.drawable.offlinearrow_tab2_normal);
-
+                mDownloadText.setBackground(MyApplication.applicationContext.getResources().getDrawable(R.drawable.offline_left_checked));
+                mDownloadText.setTextColor(Color.WHITE);
+                mDownloadedText.setBackground(MyApplication.applicationContext.getResources().getDrawable(R.drawable.offline_right_normal));
+                mDownloadedText.setTextColor(Color.GRAY);
                 mDownloadedText.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
 
                 mDownloadText.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
@@ -247,8 +251,10 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
                 int paddingVertical1 = mDownloadedText.getPaddingTop();
                 mContentViewPage.setCurrentItem(1);
 
-                mDownloadText.setBackgroundResource(R.drawable.offlinearrow_tab1_normal);
-                mDownloadedText.setBackgroundResource(R.drawable.offlinearrow_tab2_pressed);
+                mDownloadText.setBackground (MyApplication.applicationContext.getResources().getDrawable(R.drawable.offline_left_normal));
+                mDownloadText.setTextColor(Color.GRAY);
+                mDownloadedText.setBackground (MyApplication.applicationContext.getResources().getDrawable(R.drawable.offline_right_checked));
+                mDownloadedText.setTextColor(Color.WHITE);
                 mDownloadedText.setPadding(paddingHorizontal1, paddingVertical1, paddingHorizontal1, paddingVertical1);
                 mDownloadText.setPadding(paddingHorizontal1, paddingVertical1, paddingHorizontal1, paddingVertical1);
 
