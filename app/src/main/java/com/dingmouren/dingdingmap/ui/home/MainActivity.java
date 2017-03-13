@@ -48,6 +48,7 @@ import com.dingmouren.dingdingmap.base.BaseActivity;
 import com.dingmouren.dingdingmap.ui.offlinemap.OfflineMapActivity;
 import com.dingmouren.dingdingmap.ui.route_plan.RoutePlanActivity;
 import com.dingmouren.dingdingmap.ui.search.SearchActivity;
+import com.dingmouren.dingdingmap.ui.welfare.WelfatreActivity;
 import com.dingmouren.dingdingmap.util.BmbBuilderManager;
 import com.dingmouren.dingdingmap.util.SPUtil;
 import com.mancj.materialsearchbar.MaterialSearchBar;
@@ -240,10 +241,12 @@ public class MainActivity extends BaseActivity implements LocationSource, AMapLo
                     case 2:
                         break;
 
-                    case 3:
+                    case 3://美女图片
+                        startActivity(new Intent(MainActivity.this, WelfatreActivity.class));
+                        bmbSubClickedIndex = -1;
                         break;
 
-                    case 4:
+                    case 4://离线地图
                         startActivity(new Intent(MainActivity.this, OfflineMapActivity.class));
                         bmbSubClickedIndex = -1;
                         break;

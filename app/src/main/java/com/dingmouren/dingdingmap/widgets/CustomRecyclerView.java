@@ -28,15 +28,15 @@ public class CustomRecyclerView extends RecyclerView {
     }
     @Override
     public void setLayoutManager(LayoutManager layout) {
-        if (layout instanceof LinearLayoutManager) {
+//        if (layout instanceof LinearLayoutManager) {
             super.setLayoutManager(layout);
-        }else {
-            throw new ClassCastException("请使用LinearLayoutManager");
-        }
+//        }else {
+//            throw new ClassCastException("请使用LinearLayoutManager");
+//        }
     }
     @Override
     protected void attachLayoutAnimationParameters(View child, ViewGroup.LayoutParams params, int index, int count) {
-        if (getAdapter() != null && getLayoutManager() instanceof LinearLayoutManager){
+        if (getAdapter() != null /*&& getLayoutManager() instanceof LinearLayoutManager*/){
             LayoutAnimationController.AnimationParameters animationParameters = ( LayoutAnimationController.AnimationParameters)params.layoutAnimationParameters;
             if (animationParameters == null){
                 AlphaAnimation alphaAnimation = new AlphaAnimation(0,1);

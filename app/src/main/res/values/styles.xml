@@ -3,8 +3,8 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorAccent</item>
-        <item name="colorPrimaryDark">@color/colorAccent</item>
+        <item name="colorPrimary">@color/main_color</item>
+        <item name="colorPrimaryDark">@color/main_color</item>
         <item name="colorAccent">@color/main_color</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:statusBarColor">@color/colorAccent</item>
@@ -16,6 +16,11 @@
     <style name="RouteDetailTheme" parent="AppTheme">
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
+    <style name="WelfareActivityTheme" parent="AppTheme">
+        <item name="android:statusBarColor">@color/main_color</item>
+    </style>
+    <style name="PictureActivityTheme" parent="AppTheme">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
 
 </resources>

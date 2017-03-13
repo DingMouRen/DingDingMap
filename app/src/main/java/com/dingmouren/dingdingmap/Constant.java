@@ -6,4 +6,5 @@ package com.dingmouren.dingdingmap;
 
 public class Constant {
     public static final String TRAFFIC_ENABLE = "traffic_enable";
+    public static final String GANK_BASE_URL = "http://gank.io/api/";
 }
