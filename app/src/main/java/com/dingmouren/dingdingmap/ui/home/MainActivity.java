@@ -46,6 +46,7 @@ import com.dingmouren.dingdingmap.Constant;
 import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.base.BaseActivity;
+import com.dingmouren.dingdingmap.ui.about.AboutActivity;
 import com.dingmouren.dingdingmap.ui.offlinemap.OfflineMapActivity;
 import com.dingmouren.dingdingmap.ui.route_plan.RoutePlanActivity;
 import com.dingmouren.dingdingmap.ui.search.SearchActivity;
@@ -146,7 +147,7 @@ public class MainActivity extends BaseActivity implements LocationSource, AMapLo
         mAMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);//设置定位的类型为定位模式
         mAMap.showMapText(true);
         mAMap.setMapType(AMap.MAP_TYPE_NORMAL);
-        setupLocationIcon();//自定义系统的定位图标
+//        setupLocationIcon();//自定义系统的定位图标
         initTrafficEnable();
 
     }
@@ -268,6 +269,8 @@ public class MainActivity extends BaseActivity implements LocationSource, AMapLo
                         break;
 
                     case 5:
+                        startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                        bmbSubClickedIndex = -1;
                         break;
 
 

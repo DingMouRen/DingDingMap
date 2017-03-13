@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
@@ -79,6 +80,8 @@ public class BusRouteDetailActivity extends BaseActivity implements AMap.OnMapLo
         if (null == mMap) mMap = mMapView.getMap();
         if (null == mUiSettings && null != mMap){
             mUiSettings = mMap.getUiSettings();//获取操作控件类
+            mUiSettings.setZoomControlsEnabled(true);//是否显示缩放按钮
+            mUiSettings.setZoomPosition(AMapOptions.ZOOM_POSITION_RIGHT_CENTER);
             mUiSettings.setLogoLeftMargin(getWindowManager().getDefaultDisplay().getWidth());//隐藏高德地图的Logo
         }
         duration = AMapUtil.getFriendlyTime((int)mBuspath.getDuration());

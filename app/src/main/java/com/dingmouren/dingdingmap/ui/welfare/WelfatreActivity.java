@@ -49,7 +49,6 @@ public class WelfatreActivity extends BaseActivity implements WelfareContract.Vi
     private SpacesItemDecoration mSpacesItemDecoration;//Item间隔
     private int animatorX ,animatorY;//动画开始和结束的坐标
     private RevealAnimatorUtil revealAnimatorUtil;//揭露动画工具类
-    private ByteArrayOutputStream baos;
     @Override
     public int setLayoutId() {
         return R.layout.activity_welfare;

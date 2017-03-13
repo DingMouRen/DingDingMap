@@ -18,6 +18,7 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
@@ -98,7 +99,8 @@ public class SearchResultActivity extends BaseActivity implements LocationSource
         if (null == mUiSettings && null != mAMap){
             mUiSettings = mAMap.getUiSettings();//获取操作控件类
             mUiSettings.setScaleControlsEnabled(false);//是否显示比例尺控件
-            mUiSettings.setZoomControlsEnabled(false);//是否显示缩放按钮
+            mUiSettings.setZoomControlsEnabled(true);//是否显示缩放按钮
+            mUiSettings.setZoomPosition(AMapOptions.ZOOM_POSITION_RIGHT_CENTER);
             mUiSettings.setLogoLeftMargin(getWindowManager().getDefaultDisplay().getWidth());//隐藏高德地图的Logo
         }
         mAMap.showMapText(true);

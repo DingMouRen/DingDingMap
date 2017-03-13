@@ -86,6 +86,9 @@
         <activity android:name=".ui.welfare.PictureActivity"
             android:theme="@style/PictureActivityTheme"
             android:launchMode="singleTask"/>
+        <activity android:name=".ui.about.AboutActivity"
+            android:theme="@style/AboutTheme"
+            android:launchMode="singleTask"/>
 
         <service android:name="com.amap.api.location.APSService"/>
     </application>
