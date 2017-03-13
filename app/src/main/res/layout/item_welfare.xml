@@ -2,13 +2,17 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="5dp">
-    <com.dingmouren.dingdingmap.widgets.AutoScaleHeightImageView
+    android:layout_margin="3dp"
+    app:cardCornerRadius="3dp">
+    <ImageView
         android:id="@+id/img_welfare"
-        android:layout_width="150dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:minHeight="200dp"
         android:clickable="true"
+        android:transitionName="@string/welfare_share_img"
         />
 </android.support.v7.widget.CardView>

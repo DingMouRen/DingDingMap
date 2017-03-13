@@ -29,6 +29,7 @@ public class GankResultWelfare implements Serializable {
     private boolean used;
     private String who;
 
+
     public GankResultWelfare(String _id, String createdAt, String desc, String publishedAt, String source, String type, String url, boolean used, String who) {
         this._id = _id;
         this.createdAt = createdAt;
@@ -119,4 +120,5 @@ public class GankResultWelfare implements Serializable {
     public boolean getUsed() {
         return this.used;
     }
+
 }

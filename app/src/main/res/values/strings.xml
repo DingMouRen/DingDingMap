@@ -8,4 +8,5 @@
         <item>删除</item>
         <item>检查更新</item>
     </string-array>
+    <string name="welfare_share_img">welfare_share_img</string>
 </resources>

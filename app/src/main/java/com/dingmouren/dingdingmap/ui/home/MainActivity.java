@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -71,6 +72,8 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+
 public class MainActivity extends BaseActivity implements LocationSource, AMapLocationListener, ActivityCompat.OnRequestPermissionsResultCallback {
     private static final String TAG = MainActivity.class.getName();
     @BindView(R.id.mapview)
@@ -85,6 +88,7 @@ public class MainActivity extends BaseActivity implements LocationSource, AMapLo
     FloatingActionButton mFabCheck;
     @BindView(R.id.bmb)
     BoomMenuButton mBmb;
+    @BindView(R.id.fab) FloatingActionButton mFab;
     private AMap mAMap;//地图控制类
     private AMapLocationClient mLocationClient;//AMapLocationClient类对象
     private AMapLocationClientOption mLocationOption;//参数配置对象
@@ -144,10 +148,22 @@ public class MainActivity extends BaseActivity implements LocationSource, AMapLo
         mAMap.setMapType(AMap.MAP_TYPE_NORMAL);
         setupLocationIcon();//自定义系统的定位图标
         initTrafficEnable();
+
     }
 
     @Override
     public void initListener() {
+        //获取控件宽高，onCreate中是拿不到控件宽高的
+        ViewTreeObserver viewTreeObserver = mBmb.getViewTreeObserver();
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mBmb.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                //存储Bmb的中心坐标
+                SPUtil.put(MyApplication.applicationContext,Constant.REVEAL_CENTER_X,(int)(mBmb.getX() + mBmb.getWidth()/2));
+                SPUtil.put(MyApplication.applicationContext,Constant.REVEAL_CENTER_Y,(int)(mBmb.getY() + mBmb.getHeight()/2));
+            }
+        });
         mMapMode.setMenuListener(new FabSpeedDial.MenuListener() {
             @Override
             public boolean onPrepareMenu(NavigationMenu navigationMenu) {
@@ -548,6 +564,4 @@ public class MainActivity extends BaseActivity implements LocationSource, AMapLo
             mAMap.setTrafficEnabled(false);//显示实时路况图层，aMap是地图控制器对象
         }
     }
-
-
 }

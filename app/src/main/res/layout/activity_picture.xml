@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,14 +8,17 @@
     <ImageView
         android:id="@+id/img_picture"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
+        android:layout_height="wrap_content"
+        android:transitionName="@string/welfare_share_img"
+        android:layout_centerInParent="true"
+
         />
     <io.github.yavski.fabspeeddial.FabSpeedDial
         android:id="@+id/fab_dialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
         app:fabMenu="@menu/menu_picture"
         app:fabGravity="bottom_end"
         app:miniFabBackgroundTint="@android:color/white"
@@ -27,7 +31,7 @@
         android:layout_height="wrap_content"
         android:text="无网络了哟~~"
         android:textColor="@android:color/white"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         android:visibility="gone"
         />
-</FrameLayout>
+</RelativeLayout>

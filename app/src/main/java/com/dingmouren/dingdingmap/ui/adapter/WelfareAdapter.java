@@ -1,5 +1,6 @@
 package com.dingmouren.dingdingmap.ui.adapter;
 
+import android.graphics.Bitmap;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -10,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.bean.GankResultWelfare;
@@ -36,6 +40,7 @@ public class WelfareAdapter extends RecyclerView.Adapter<WelfareAdapter.ViewHold
     public void clearList(){
         this.mList.clear();
     }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(MyApplication.applicationContext).inflate(R.layout.item_welfare,parent,false);
@@ -67,10 +72,11 @@ public class WelfareAdapter extends RecyclerView.Adapter<WelfareAdapter.ViewHold
         }
 
         public void bindData(GankResultWelfare bean,int position){
-            ViewGroup.LayoutParams params = mImg.getLayoutParams();
-            params.height = Dp2Sp2PxUtil.dip2px(150)  + position % 2 * Dp2Sp2PxUtil.dip2px(20);
-            mImg.setLayoutParams(params);
-            Glide.with(MyApplication.applicationContext).load(bean.getUrl()).asBitmap().centerCrop().placeholder(R.mipmap.item_bg).into(mImg);
+            Glide.with(MyApplication.applicationContext).load(bean.getUrl())
+                    .crossFade(500)
+                    .placeholder(R.mipmap.item_bg)
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .into(mImg);
         }
     }
 }

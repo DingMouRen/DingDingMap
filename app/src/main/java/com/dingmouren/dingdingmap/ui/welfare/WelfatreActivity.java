@@ -1,5 +1,8 @@
 package com.dingmouren.dingdingmap.ui.welfare;
 
+import android.animation.Animator;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
@@ -7,14 +10,25 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.transition.ChangeImageTransform;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.ImageView;
 
+import com.dingmouren.dingdingmap.Constant;
+import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.base.BaseActivity;
 import com.dingmouren.dingdingmap.bean.GankResultWelfare;
 import com.dingmouren.dingdingmap.ui.adapter.WelfareAdapter;
+import com.dingmouren.dingdingmap.util.RevealAnimatorUtil;
+import com.dingmouren.dingdingmap.util.SPUtil;
 import com.dingmouren.dingdingmap.widgets.SpacesItemDecoration;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import butterknife.BindView;
@@ -32,7 +46,10 @@ public class WelfatreActivity extends BaseActivity implements WelfareContract.Vi
     private WelfarePresenter mPresenter;
     public StaggeredGridLayoutManager mLayoutManager;
     private WelfareAdapter mAdapter;
-    private SpacesItemDecoration mSpacesItemDecoration;
+    private SpacesItemDecoration mSpacesItemDecoration;//Item间隔
+    private int animatorX ,animatorY;//动画开始和结束的坐标
+    private RevealAnimatorUtil revealAnimatorUtil;//揭露动画工具类
+    private ByteArrayOutputStream baos;
     @Override
     public int setLayoutId() {
         return R.layout.activity_welfare;
@@ -45,6 +62,8 @@ public class WelfatreActivity extends BaseActivity implements WelfareContract.Vi
 
     @Override
     public void initView(Bundle savedInstanceState) {
+        animatorX = (int) SPUtil.get(MyApplication.applicationContext, Constant.REVEAL_CENTER_X,this.getWindowManager().getDefaultDisplay().getWidth());//默认值是屏幕宽度
+        animatorY = (int) SPUtil.get(MyApplication.applicationContext,Constant.REVEAL_CENTER_Y,this.getWindowManager().getDefaultDisplay().getHeight());//默认值是屏幕高度
         mToolbar.setNavigationIcon(R.mipmap.back_arrow);
         mToolbar.setTitle("美女福利多多");
         setSupportActionBar(mToolbar);
@@ -63,21 +82,30 @@ public class WelfatreActivity extends BaseActivity implements WelfareContract.Vi
         }
 
 
-        mLayoutManager = new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL);
+        mLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+//        mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         mRecycler.setLayoutManager(mLayoutManager);
         mRecycler.setHasFixedSize(true);
-        mSpacesItemDecoration = new SpacesItemDecoration(15);
-        mRecycler.addItemDecoration(mSpacesItemDecoration);
         mRecycler.setAdapter(mAdapter);
 
+        //揭露动画
+        revealAnimatorUtil = new RevealAnimatorUtil(mRootLayout,this);
+        mRootLayout.post(()-> revealAnimatorUtil.startRevealAnimator(false,animatorX,animatorY));
+        getWindow().setSharedElementExitTransition(new ChangeImageTransform());
+        getWindow().setSharedElementReenterTransition(new ChangeImageTransform());
     }
 
     @Override
     public void initListener() {
-        mToolbar.setNavigationOnClickListener(v -> finish());
-        mAdapter.setItemOnClickListener((view, imgUrl, position) -> {
-            PictureActivity.newInstance(WelfatreActivity.this,imgUrl );
-        });
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+        try {
+            mAdapter.setItemOnClickListener((view, imgUrl, position) -> {
+                PictureActivity.newInstance(WelfatreActivity.this,view,imgUrl);
+            });
+        } catch (Exception e) {
+            Log.e("error",e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -111,5 +139,18 @@ public class WelfatreActivity extends BaseActivity implements WelfareContract.Vi
         mAdapter.addList(list);
         mAdapter.notifyDataSetChanged();
         setDataRefresh(false);
+    }
+
+    @Override
+    public void onBackPressed() {
+        revealAnimatorUtil.startRevealAnimator(true,animatorX,animatorY);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(null != mRootLayout){
+            mRootLayout.removeAllViews();
+        }
     }
 }

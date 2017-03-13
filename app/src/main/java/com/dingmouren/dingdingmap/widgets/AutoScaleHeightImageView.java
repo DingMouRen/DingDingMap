@@ -17,10 +17,10 @@ public class AutoScaleHeightImageView extends ImageView {
 			 int width = drawable.getMinimumWidth();
 			 int height = drawable.getMinimumHeight();
 			 float scale = (float)height/width;
-			 
+
 			 int widthMeasure = MeasureSpec.getSize(widthMeasureSpec);
 			 int heightMeasure = (int)(widthMeasure*scale);
-			 
+
 			 heightMeasureSpec =  MeasureSpec.makeMeasureSpec(heightMeasure, MeasureSpec.EXACTLY);
 		 }
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);

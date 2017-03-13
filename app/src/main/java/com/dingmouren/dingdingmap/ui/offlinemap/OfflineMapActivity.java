@@ -15,6 +15,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,12 +23,15 @@ import com.amap.api.maps.offlinemap.OfflineMapCity;
 import com.amap.api.maps.offlinemap.OfflineMapManager;
 import com.amap.api.maps.offlinemap.OfflineMapProvince;
 import com.amap.api.maps.offlinemap.OfflineMapStatus;
+import com.dingmouren.dingdingmap.Constant;
 import com.dingmouren.dingdingmap.MyApplication;
 import com.dingmouren.dingdingmap.R;
 import com.dingmouren.dingdingmap.base.BaseActivity;
 import com.dingmouren.dingdingmap.ui.adapter.OfflineDownloadedAdapter;
 import com.dingmouren.dingdingmap.ui.adapter.OfflineListAdapter;
 import com.dingmouren.dingdingmap.ui.adapter.OfflinePagerAdapter;
+import com.dingmouren.dingdingmap.util.RevealAnimatorUtil;
+import com.dingmouren.dingdingmap.util.SPUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +52,8 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
     TextView mDownloadedText;
     @BindView(R.id.content_viewpage)
     ViewPager mContentViewPage;
+    @BindView(R.id.container)
+    RelativeLayout mRootLayout;
 
     private ExpandableListView mAllOfflineMapList;
     private ListView mDownLoadedList;
@@ -61,6 +67,8 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
     private final static int DISMISS_INIT_DIALOG = 2;
     private final static int SHOW_INIT_DIALOG = 3;
     private List<OfflineMapProvince> provinceList = new ArrayList<OfflineMapProvince>();// 保存一级目录的省直辖市
+    private int animatorX ,animatorY;//动画开始和结束的坐标
+    private RevealAnimatorUtil revealAnimatorUtil;//揭露动画工具类
 
     private Handler handler = new Handler() {
         @Override
@@ -100,9 +108,14 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
 
     @Override
     public void initView(Bundle savedInstanceState) {
+        animatorX = (int) SPUtil.get(MyApplication.applicationContext, Constant.REVEAL_CENTER_X,this.getWindowManager().getDefaultDisplay().getWidth());//默认值是屏幕宽度
+        animatorY = (int) SPUtil.get(MyApplication.applicationContext,Constant.REVEAL_CENTER_Y,this.getWindowManager().getDefaultDisplay().getHeight());//默认值是屏幕高度
         amapManager = new OfflineMapManager(this, this);//构造离线地图类
         amapManager.setOnOfflineLoadedListener(this);
         initDialog();
+        //揭露动画
+        revealAnimatorUtil = new RevealAnimatorUtil(mRootLayout,this);
+//        mRootLayout.post(()-> revealAnimatorUtil.startRevealAnimator(false,animatorX,animatorY));进入的时候不使用揭露动画
     }
 
     @Override
@@ -113,7 +126,6 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
         mContentViewPage.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             @Override
@@ -159,6 +171,12 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
             initDialog.dismiss();
             initDialog.cancel();
         }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        revealAnimatorUtil.startRevealAnimator(true,animatorX,animatorY);
     }
 
     @Override//OfflineLoadedListener
@@ -261,7 +279,7 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
                 mDownloadedAdapter.notifyDataChange();
                 break;
             case R.id.img_back:
-                finish();
+               onBackPressed();
                 break;
         }
     }

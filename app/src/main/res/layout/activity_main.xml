@@ -95,4 +95,15 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/activity_horizontal_margin"
         />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/back_arrow_blue"
+        android:layout_alignParentBottom="true"
+        android:visibility="invisible"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="32dp"
+        android:layout_marginBottom="32dp"
+        />
 </RelativeLayout>

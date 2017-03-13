@@ -7,7 +7,7 @@
         <item name="colorPrimaryDark">@color/main_color</item>
         <item name="colorAccent">@color/main_color</item>
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:statusBarColor">@color/colorAccent</item>
+        <item name="android:statusBarColor">@color/main_color</item>
     </style>
 
     <style name="MainTheme" parent="AppTheme">
@@ -17,10 +17,15 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
     <style name="WelfareActivityTheme" parent="AppTheme">
-        <item name="android:statusBarColor">@color/main_color</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
     <style name="PictureActivityTheme" parent="AppTheme">
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <!--透明状态栏-->
+        <item name="android:windowTranslucentStatus">true</item>
+        <!--透明导航栏-->
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
 </resources>

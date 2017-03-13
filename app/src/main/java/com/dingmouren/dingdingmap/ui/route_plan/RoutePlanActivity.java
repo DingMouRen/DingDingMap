@@ -61,6 +61,7 @@ import com.dingmouren.dingdingmap.ui.detail.WalkRouteDetailActivity;
 import com.dingmouren.dingdingmap.ui.search.RoutePlanSearchActivity;
 import com.dingmouren.dingdingmap.util.AMapUtil;
 import com.dingmouren.dingdingmap.util.DrivingRouteOverlay;
+import com.dingmouren.dingdingmap.util.RevealAnimatorUtil;
 import com.dingmouren.dingdingmap.util.RideRouteOverlay;
 import com.dingmouren.dingdingmap.util.SPUtil;
 import com.dingmouren.dingdingmap.util.WalkRouteOverlay;
@@ -109,6 +110,8 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     ProgressBar mProgressBar;
     @BindView(R.id.tv_logo)
     TextView mTvLogo;
+    @BindView(R.id.root_layout)
+    RelativeLayout mRootLayout;
 
     private AMap mAMap;
     private RouteSearch mRouteSearch;
@@ -125,6 +128,8 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     private final int ROUTE_TYPE_RIDE = 3;
     private RoutePlanBusAdapter mBusAdapter;
     private UiSettings mUiSetting;
+    private int animatorX ,animatorY;//动画开始和结束的坐标
+    private RevealAnimatorUtil revealAnimatorUtil;//揭露动画工具类
     //定位
     private OnLocationChangedListener mLocationChangedListener;//定位回调监听
     private AMapLocationClient mLocationClient;//AMapLocationClient类对象
@@ -167,6 +172,8 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
 
     @Override
     public void initView(Bundle savedInstanceState) {
+        animatorX = (int) SPUtil.get(MyApplication.applicationContext, Constant.REVEAL_CENTER_X,this.getWindowManager().getDefaultDisplay().getWidth());//默认值是屏幕宽度
+        animatorY = (int) SPUtil.get(MyApplication.applicationContext,Constant.REVEAL_CENTER_Y,this.getWindowManager().getDefaultDisplay().getHeight());//默认值是屏幕高度
         EventBus.getDefault().register(this);
         mMapView.onCreate(savedInstanceState);
         if (null == mAMap) mAMap = mMapView.getMap();
@@ -201,7 +208,9 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
         if (null != mPoiItem && mPoiItem.getTitle() != null) {
             mEditEnd.setText(mPoiItem.getTitle(), TextView.BufferType.NORMAL);
         }
-
+        //揭露动画
+        revealAnimatorUtil = new RevealAnimatorUtil(mRootLayout,this);
+        mRootLayout.post(()-> revealAnimatorUtil.startRevealAnimator(false,animatorX,animatorY));
 
     }
 
@@ -214,7 +223,7 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
         mAMap.setOnInfoWindowClickListener(RoutePlanActivity.this);
         mAMap.setInfoWindowAdapter(RoutePlanActivity.this);
 
-        mImgBack.setOnClickListener(v -> finish());
+        mImgBack.setOnClickListener(v -> onBackPressed());
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -293,6 +302,12 @@ public class RoutePlanActivity extends BaseActivity implements AMap.OnMapClickLi
     protected void onPause() {
         super.onPause();
         mMapView.onPause();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        revealAnimatorUtil.startRevealAnimator(true,animatorX,animatorY);
     }
 
     @Override
