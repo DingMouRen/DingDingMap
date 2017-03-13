@@ -16,12 +16,9 @@ public class BmbBuilderManager {
             R.drawable.share,
             R.drawable.girl,
             R.drawable.offline_map,
-            R.drawable.navigation,
-            R.drawable.setting,
-            R.drawable.mine,
             R.drawable.about,
     };
-    private static String[] strResources = new String[]{"赚钱","路线","分享","福利","离线","导航","设置","个人","关于"};
+    private static String[] strResources = new String[]{"赚钱","路线","分享","福利","离线","关于"};
     private static int imageResourceIndex = 0;
 
     static int getImageResource() {

@@ -35,8 +35,8 @@
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:alpha="0.8"
         app:bmb_buttonEnum="simpleCircle"
-        app:bmb_piecePlaceEnum="piecePlace_dot_9_1"
-        app:bmb_buttonPlaceEnum="buttonPlace_sc_9_1"
+        app:bmb_piecePlaceEnum="piecePlace_dot_6_3"
+        app:bmb_buttonPlaceEnum="buttonPlace_sc_6_3"
         app:bmb_showDuration="1000"
         app:bmb_hideDuration="500"
         />
