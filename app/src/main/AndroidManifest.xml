@@ -48,15 +48,19 @@
             android:name="com.amap.api.v2.apikey"
             android:value="1a7efab8803d033aefb777eda17ffeb7">
         </meta-data>
-        <activity android:name=".ui.home.MainActivity"
-            android:launchMode="singleTask"
-            android:theme="@style/MainTheme"
-            >
+        <activity android:name=".ui.SplashActivtiy"
+            android:theme="@style/SplashTheme"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".ui.home.MainActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/MainTheme"
+            >
         </activity>
         <activity android:name=".ui.search.SearchActivity"
             android:launchMode="singleTask"
@@ -89,6 +93,7 @@
         <activity android:name=".ui.about.AboutActivity"
             android:theme="@style/AboutTheme"
             android:launchMode="singleTask"/>
+
 
         <service android:name="com.amap.api.location.APSService"/>
     </application>

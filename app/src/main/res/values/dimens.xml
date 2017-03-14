@@ -6,4 +6,8 @@
     <dimen name="main_bottom_height">50dp</dimen>
     <dimen name="route_detail_text_size">12sp</dimen>
     <dimen name="elevation_detail">5dp</dimen>
+    <!--splash页面倒计时的宽高-->
+    <dimen name="timer_width">40dp</dimen>
+    <dimen name="timer_height">40dp</dimen>
+    <dimen name="font_space_width">12dp</dimen>
 </resources>

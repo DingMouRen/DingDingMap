@@ -17,6 +17,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -101,6 +103,7 @@ public class MainActivity extends BaseActivity implements LocationSource, AMapLo
     boolean isLocated = false;//首次进来定位用的
     private String mCurrentCityName;//定位当前城市名称
     private int bmbSubClickedIndex = -1;
+    private long exitTime ;//双击退出时用的时间标记
 
     /**
      * 需要进行检测的权限数组
@@ -248,6 +251,7 @@ public class MainActivity extends BaseActivity implements LocationSource, AMapLo
                 Log.e(TAG,"onBoomDidHide");
                 switch (bmbSubClickedIndex){
                     case 0:
+                        Toast.makeText(MyApplication.applicationContext,"功能待开发",Toast.LENGTH_SHORT).show();
                         break;
 
                     case 1://路线搜索
@@ -256,6 +260,11 @@ public class MainActivity extends BaseActivity implements LocationSource, AMapLo
                         break;
 
                     case 2:
+                        Intent intent = new Intent();
+                        intent.setAction(Intent.ACTION_SEND);
+                        intent.putExtra(Intent.EXTRA_TEXT, "https://github.com/DingMouRen/DingDingMap");
+                        intent.setType("text/plain");
+                        startActivity(Intent.createChooser(intent, "项目源码地址分享到"));
                         break;
 
                     case 3://美女图片
@@ -339,6 +348,21 @@ public class MainActivity extends BaseActivity implements LocationSource, AMapLo
             mLocationClient.onDestroy();
         }
     }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){
+            if((System.currentTimeMillis()-exitTime) > 2000){
+                Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
+            } else {
+                finish();
+                System.exit(0);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
 
     @Override//定位回调监听器
     public void onLocationChanged(AMapLocation aMapLocation) {
@@ -538,14 +562,6 @@ public class MainActivity extends BaseActivity implements LocationSource, AMapLo
         startActivity(intent);
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            this.finish();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
 
     /**
      * 初始化路况信息

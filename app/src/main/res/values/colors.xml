@@ -6,5 +6,6 @@
     <color name="main_color">#05C1F1</color>
     <color name="status_color">#a0e2f3</color>
     <color name="line">#c2c2c2c2</color>
+    <color name="gray">#edebeb</color>
 
 </resources>

@@ -85,5 +85,8 @@ dependencies {
     /*日志*/
     compile 'com.squareup.okhttp3:logging-interceptor:3.4.2'
     compile 'com.jiongbull:jlog:1.0.5'
+    /*圆形图片*/
     compile 'de.hdodenhof:circleimageview:2.1.0'
+    /*lottie动画工具库*/
+    compile 'com.airbnb.android:lottie:1.5.3'
 }

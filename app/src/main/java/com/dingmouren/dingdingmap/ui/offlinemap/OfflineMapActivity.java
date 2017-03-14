@@ -232,17 +232,17 @@ public class OfflineMapActivity extends BaseActivity implements OfflineMapManage
         Log.i("amap-demo", "onCheckUpdate " + name + " : " + hasNew);
         Message message = new Message();
         message.what = SHOW_MSG;
-        message.obj = name + " 地图数据: " + (hasNew == true ? "有更新":"已经是最新");
+        message.obj = name + "地图数据" + (hasNew == true ? "有更新":"已经是最新");
         handler.sendMessage(message);
     }
 
     @Override//OfflineMapManager
     public void onRemove(boolean success, String name, String describe) {
-        Log.i("amap-demo", "删除 " + name + " 离线地图: " + (success == true ? "成功":"失败"));
+        Log.i("amap-demo", "删除 " + name + " 离线地图" + (success == true ? "成功":"失败"));
         handler.sendEmptyMessage(UPDATE_LIST);
         Message message = new Message();
         message.what = SHOW_MSG;
-        message.obj = "删除 " + name + " 离线地图: " + (success == true ? "成功":"失败");
+        message.obj = "删除" + name + "离线地图" + (success == true ? "成功":"失败");
         handler.sendMessage(message);
     }
 
