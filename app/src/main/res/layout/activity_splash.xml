@@ -45,6 +45,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="钉钉地图"
+            android:textStyle="bold"
             android:textColor="@android:color/white"
             android:padding="5dp"
             android:textSize="20sp"
