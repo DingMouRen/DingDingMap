@@ -18,24 +18,9 @@
 ![image](https://github.com/DingMouRen/DingDingMap/raw/master/imgs/map1.png)<br>   
 ![image](https://github.com/DingMouRen/DingDingMap/raw/master/imgs/map2.png)<br>   
 ![image](https://github.com/DingMouRen/DingDingMap/raw/master/imgs/map3.png)<br>   
-　　　　　　　　　　![image](https://github.com/DingMouRen/DingDingMap/raw/master/imgs/map.gif)<br>   
+　　　　　　　　　　　　　　　![image](https://github.com/DingMouRen/DingDingMap/raw/master/imgs/map.gif)<br>   
 
 
-使用到的第三方库|
-----------------|
-RxJava|
-Retrofit|
-OkHttp|
-ButterKnife|
-MaterialSearchBar|
-fab-speed-dial|
-MaterialEditText|
-EventBus|
-BoomMenu|
-Matarial-Dialogs|
-Glide|
-PhotoView|
-CircleImageView|
-Lottie|
 
-####**感谢以上这些优秀框架的开发者，地图数据来自高德地图，图片数据来自gank.io**
+
+####　**感谢以上这些优秀框架的开发者，地图数据来自高德地图，图片数据来自gank.io**
